@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VALORANT Server Status</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>VALORANT <span>Server Status</span></h1>
+    <div class="controls">
+      <span id="lastUpdated"></span>
+      <button id="refreshBtn">Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="overall" class="overall">Loading…</div>
+    <div id="regions" class="grid"></div>
+  </main>
+
+  <footer>Data from Riot's official status CDN. Auto-refreshes every 5 mins.</footer>
+  <script src="app.js"></script>
+</body>
+</html>
