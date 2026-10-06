@@ -3,9 +3,10 @@ import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Send } from 'lucide-react'
 import { NOTE_TYPES } from '../../types'
-import type { NoteType } from '../../types'
+import type { AttachmentMeta, NoteType } from '../../types'
 import { subjects } from '../../data'
 import { useNotes } from '../../store'
+import { AttachmentInput } from '../../components/Attachments'
 import {
   Button,
   Card,
@@ -31,6 +32,7 @@ export function UploadNotePage() {
   const [topicId, setTopicId] = useState('')
   const [author, setAuthor] = useState('')
   const [content, setContent] = useState('')
+  const [attachments, setAttachments] = useState<AttachmentMeta[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const chapters = subjects.find((s) => s.id === subjectId)?.chapters ?? []
@@ -64,6 +66,7 @@ export function UploadNotePage() {
       topicId,
       author: author.trim() || 'Anonymous',
       content: content.trim(),
+      attachments,
     })
     navigate('/notes')
   }
@@ -183,6 +186,10 @@ export function UploadNotePage() {
                 rows={8}
                 placeholder={t('notes.contentPlaceholder')}
               />
+            </Field>
+
+            <Field label={t('notes.fieldAttachments')} hint={t('notes.attachmentsHint')}>
+              <AttachmentInput attachments={attachments} onChange={setAttachments} />
             </Field>
 
             <div className="flex flex-wrap justify-end gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-800">

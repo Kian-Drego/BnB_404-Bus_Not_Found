@@ -6,6 +6,7 @@ import { subjects, taxonomyOf } from '../../data'
 import { mergeNotes, noteScore, useNotes, useVotes } from '../../store'
 import { formatDate } from '../../lib/utils'
 import { Badge, Button, Card, CardBody, EmptyState, Input, PageHeader, Select } from '../../components/ui'
+import { AttachmentChips } from '../../components/Attachments'
 import { useT } from '../../i18n'
 import { enumLabel, NOTE_TYPE_HI } from '../../i18n/enums'
 import { VoteButtons } from './VoteButtons'
@@ -48,6 +49,7 @@ function NoteCard({ note }: { note: Note }) {
           <p className="line-clamp-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
             {note.content}
           </p>
+          <AttachmentChips attachments={note.attachments} className="pt-1" />
           <p className="text-xs text-zinc-400 dark:text-zinc-500">
             {t('notes.by')}{' '}
             <span className="font-medium text-zinc-500 dark:text-zinc-400">{note.author}</span>

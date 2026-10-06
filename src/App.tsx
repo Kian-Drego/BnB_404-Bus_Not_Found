@@ -4,6 +4,7 @@ import { Home } from './pages/Home'
 import { NotFound } from './pages/NotFound'
 import { PapersPage } from './modules/papers/PapersPage'
 import { WorksheetPage } from './modules/papers/WorksheetPage'
+import { ContributePaperPage } from './modules/papers/ContributePaperPage'
 import { NotesPage } from './modules/notes/NotesPage'
 import { UploadNotePage } from './modules/notes/UploadNotePage'
 import { ModerationPage } from './modules/notes/ModerationPage'
@@ -18,6 +19,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="papers" element={<PapersPage />} />
+        <Route path="papers/contribute" element={<ContributePaperPage />} />
         <Route path="worksheet" element={<WorksheetPage />} />
         <Route path="notes" element={<NotesPage />} />
         <Route path="notes/upload" element={<UploadNotePage />} />

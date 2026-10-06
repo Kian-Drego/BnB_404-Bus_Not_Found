@@ -67,6 +67,53 @@ export const papersDict = {
     'papers.time.minutes': '{n} min',
     'papers.time.hours': '{n}h',
     'papers.time.hoursMinutes': '{h}h {m}m',
+
+    /* Contribute page */
+    'papers.contribute.title': 'Contribute questions',
+    'papers.contribute.subtitle':
+      'Share past-paper questions with the community — attach scans, and split full PDF papers into question bundles.',
+    'papers.contribute.button': 'Contribute',
+    'papers.contribute.name': 'Your name',
+    'papers.contribute.nameHint': 'Shown as the contributor (defaults to Anonymous)',
+    'papers.fieldAttachments': 'Attachments (optional)',
+    'papers.attachmentsHint':
+      'Attach question scans or diagrams. A full PDF paper must be separated into question bundles below.',
+    'papers.topicsInPdf.label': 'Topics within this PDF',
+    'papers.topicsInPdf.hint':
+      'Required for PDF uploads — list every topic the PDF covers, separated by commas.',
+    'papers.topicsInPdf.required': 'Please list the topics covered in the PDF',
+    'papers.topicsInPdf.info':
+      "You've attached a PDF. List all topics it covers above, then separate its questions into bundles below.",
+    'papers.bundles.title': 'Question bundles',
+    'papers.bundles.hint':
+      'Separate the paper into bundles — group questions by topic or section.',
+    'papers.bundleN': 'Bundle {n}',
+    'papers.bundle.title': 'Bundle title',
+    'papers.bundle.titlePlaceholder': 'e.g. Algebra — Q1 to Q5',
+    'papers.bundle.titleRequired': 'Please give every bundle a title',
+    'papers.question.text': 'Question text',
+    'papers.question.textRequired': 'Please enter the question',
+    'papers.question.marks': 'Marks',
+    'papers.question.marksRequired': 'Marks must be at least 1',
+    'papers.question.answer': 'Solution (optional)',
+    'papers.question.answerHint': 'Step-by-step solution, one step per line',
+    'papers.addQuestion': 'Add question to bundle',
+    'papers.addBundle': 'Add bundle',
+    'papers.removeBundle': 'Remove bundle',
+    'papers.error.subject': 'Please choose a subject',
+    'papers.error.chapter': 'Please choose a chapter',
+    'papers.error.topic': 'Please choose a topic',
+    'papers.error.examType': 'Please choose an exam type',
+    'papers.error.year': 'Enter a year between 2000 and 2100',
+
+    /* Community PDF uploads */
+    'papers.uploads.title': 'Community PDF papers',
+    'papers.uploads.topicsInPdf': 'Topics in this PDF',
+    'papers.uploads.questionCountOne': '{n} question',
+    'papers.uploads.questionCountMany': '{n} questions',
+    'papers.uploads.expand': 'Show questions',
+    'papers.uploads.collapse': 'Hide questions',
+    'papers.uploads.confirmRemove': 'Remove this upload and its questions?',
   },
   hi: {
     /* Repository page */
@@ -135,5 +182,52 @@ export const papersDict = {
     'papers.time.minutes': '{n} मिनट',
     'papers.time.hours': '{n} घं',
     'papers.time.hoursMinutes': '{h} घं {m} मि',
+
+    /* Contribute page */
+    'papers.contribute.title': 'प्रश्न योगदान करें',
+    'papers.contribute.subtitle':
+      'सामुदायिक पिछले प्रश्न-पत्र साझा करें — स्कैन संलग्न करें, और पूर्ण PDF प्रश्न-पत्रों को प्रश्न बंडल में अलग करें।',
+    'papers.contribute.button': 'योगदान करें',
+    'papers.contribute.name': 'आपका नाम',
+    'papers.contribute.nameHint': 'योगदानकर्ता के रूप में दिखाई देगा (डिफ़ॉल्ट: अनाम)',
+    'papers.fieldAttachments': 'संलग्नक (वैकल्पिक)',
+    'papers.attachmentsHint':
+      'प्रश्न स्कैन या आरेख संलग्न करें। पूर्ण PDF प्रश्न-पत्र को नीचे प्रश्न बंडल में अलग करना होगा।',
+    'papers.topicsInPdf.label': 'इस PDF में शामिल टॉपिक',
+    'papers.topicsInPdf.hint':
+      'PDF अपलोड के लिए अनिवार्य — PDF द्वारा शामिल प्रत्येक टॉपिक को अल्पविराम से अलग करके लिखें।',
+    'papers.topicsInPdf.required': 'कृपया PDF में शामिल सभी टॉपिक लिखें',
+    'papers.topicsInPdf.info':
+      'आपने PDF संलग्न की है। ऊपर इसमें शामिल सभी टॉपिक लिखें, फिर नीचे इसके प्रश्नों को बंडल में अलग करें।',
+    'papers.bundles.title': 'प्रश्न बंडल',
+    'papers.bundles.hint':
+      'प्रश्न-पत्र को बंडल में अलग करें — प्रश्नों को टॉपिक या खंड के अनुसार समूहित करें।',
+    'papers.bundleN': 'बंडल {n}',
+    'papers.bundle.title': 'बंडल शीर्षक',
+    'papers.bundle.titlePlaceholder': 'उदा० बीजगणित — प्रश्न 1 से 5',
+    'papers.bundle.titleRequired': 'कृपया प्रत्येक बंडल का शीर्षक लिखें',
+    'papers.question.text': 'प्रश्न पाठ',
+    'papers.question.textRequired': 'कृपया प्रश्न लिखें',
+    'papers.question.marks': 'अंक',
+    'papers.question.marksRequired': 'अंक कम से कम 1 होने चाहिए',
+    'papers.question.answer': 'हल (वैकल्पिक)',
+    'papers.question.answerHint': 'चरणबद्ध हल, प्रत्येक चरण अलग पंक्ति पर',
+    'papers.addQuestion': 'बंडल में प्रश्न जोड़ें',
+    'papers.addBundle': 'बंडल जोड़ें',
+    'papers.removeBundle': 'बंडल हटाएँ',
+    'papers.error.subject': 'कृपया एक विषय चुनें',
+    'papers.error.chapter': 'कृपया एक अध्याय चुनें',
+    'papers.error.topic': 'कृपया एक टॉपिक चुनें',
+    'papers.error.examType': 'कृपया एक परीक्षा प्रकार चुनें',
+    'papers.error.year': '2000 और 2100 के बीच का वर्ष लिखें',
+
+    /* Community PDF uploads */
+    'papers.uploads.title': 'सामुदायिक PDF प्रश्न-पत्र',
+    'papers.uploads.topicsInPdf': 'इस PDF में शामिल टॉपिक',
+    'papers.uploads.questionCountOne': '{n} प्रश्न',
+    'papers.uploads.questionCountMany': '{n} प्रश्न',
+    'papers.uploads.expand': 'प्रश्न दिखाएँ',
+    'papers.uploads.collapse': 'प्रश्न छिपाएँ',
+    'papers.uploads.confirmRemove': 'इस अपलोड और इसके प्रश्न हटाएँ?',
   },
 }

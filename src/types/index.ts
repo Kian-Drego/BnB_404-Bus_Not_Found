@@ -4,6 +4,17 @@
 
 export type PastelColor = 'lavender' | 'mint' | 'blue' | 'peach'
 
+/** Metadata for a user-uploaded file. The blob itself lives in IndexedDB
+ *  (see src/lib/files.ts), keyed by AttachmentMeta.id. */
+export interface AttachmentMeta {
+  id: string
+  name: string
+  /** e.g. 'application/pdf' | 'image/png' */
+  mime: string
+  /** File size in bytes. */
+  size: number
+}
+
 /* ---------------- Module A/B: taxonomy & content ------------------ */
 
 export interface Topic {
@@ -43,10 +54,39 @@ export interface Question {
   difficulty: Difficulty
   /** Question body text. */
   text: string
-  /** Step-by-step solution / answer script. */
+  /** Step-by-step solution / answer script. May be empty for fresh uploads. */
   answer: string
   contributedBy: string
   verified: boolean
+  /** Attached images / PDF (metadata only; blobs in IndexedDB). */
+  attachments?: AttachmentMeta[]
+  /** Set when the question came from a PDF paper upload. */
+  uploadId?: string
+  bundleId?: string
+  bundleTitle?: string
+}
+
+/** A named group of questions carved out of an uploaded PDF paper. */
+export interface QuestionBundle {
+  id: string
+  title: string
+  questionIds: string[]
+}
+
+/** Metadata for a PDF paper upload that was split into question bundles. */
+export interface PaperUpload {
+  id: string
+  subjectId: string
+  chapterId: string
+  topicId: string
+  year: number
+  examType: ExamType
+  /** Every topic covered inside the PDF — required whenever a PDF is attached. */
+  topicsInPdf: string[]
+  bundles: QuestionBundle[]
+  attachment: AttachmentMeta
+  contributedBy: string
+  createdAt: string
 }
 
 export const NOTE_TYPES = ['note', 'answer-script'] as const
@@ -68,6 +108,8 @@ export interface Note {
   baseVotes: number
   verified: boolean
   flagged: boolean
+  /** Attached images / PDF (metadata only; blobs in IndexedDB). */
+  attachments?: AttachmentMeta[]
 }
 
 /* ---------------- Module D: scholarships -------------------------- */

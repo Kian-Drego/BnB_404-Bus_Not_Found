@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Check, ChevronDown, ChevronUp, Plus, ShieldCheck } from 'lucide-react'
+import { Check, ChevronDown, ChevronUp, Package, Plus, ShieldCheck } from 'lucide-react'
 import type { Difficulty, Question } from '../../types'
 import { taxonomyOf } from '../../data'
 import { useWorksheet } from '../../store'
 import { useT } from '../../i18n'
 import { DIFFICULTY_HI, enumLabel, EXAM_TYPE_HI } from '../../i18n/enums'
+import { AttachmentChips } from '../../components/Attachments'
 import { Badge, Button, Card } from '../../components/ui'
 import type { BadgeColor } from '../../components/ui'
 
@@ -28,6 +29,8 @@ export function QuestionCard({ question }: { question: Question }) {
         {question.text}
       </p>
 
+      <AttachmentChips attachments={question.attachments} className="mt-3" />
+
       {(chapter || topic) && (
         <p className="mt-1.5 text-xs text-zinc-400 dark:text-zinc-500">
           {[chapter?.name, topic?.name].filter(Boolean).join(' • ')}
@@ -49,6 +52,12 @@ export function QuestionCard({ question }: { question: Question }) {
             {t('common.verified')}
           </Badge>
         )}
+        {question.bundleTitle && (
+          <Badge color="blue">
+            <Package className="h-3 w-3" />
+            {question.bundleTitle}
+          </Badge>
+        )}
       </div>
 
       {showSolution && (
@@ -68,14 +77,16 @@ export function QuestionCard({ question }: { question: Question }) {
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-zinc-100 pt-3 dark:border-zinc-800">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <Button variant="ghost" size="sm" onClick={() => setShowSolution((v) => !v)}>
-            {showSolution ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-            {showSolution ? t('papers.hideSolution') : t('papers.viewSolution')}
-          </Button>
+          {question.answer.trim() && (
+            <Button variant="ghost" size="sm" onClick={() => setShowSolution((v) => !v)}>
+              {showSolution ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+              {showSolution ? t('papers.hideSolution') : t('papers.viewSolution')}
+            </Button>
+          )}
           <span className="text-xs text-zinc-400 dark:text-zinc-500">
             {t('papers.contributedBy', { name: question.contributedBy })}
           </span>

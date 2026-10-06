@@ -368,7 +368,8 @@ export function generateAnswerKey(qs: Question[]): void {
     doc.text(`Q${i + 1} — ${q.marks} mark${q.marks === 1 ? '' : 's'}`, MARGIN, w.getY())
     w.advance(16)
     w.lines(metaLine(q), { size: 9, color: GRAY, gapAfter: 6 })
-    for (const step of q.answer.split('\n')) {
+    const steps = q.answer.trim() ? q.answer.split('\n') : ['No solution provided yet.']
+    for (const step of steps) {
       w.lines(step, {
         size: 10.5,
         color: BODY,

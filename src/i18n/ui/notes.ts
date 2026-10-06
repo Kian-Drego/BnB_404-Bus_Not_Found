@@ -52,6 +52,8 @@ export const notesDict = {
     'notes.errorChapter': 'Please choose a chapter',
     'notes.errorTopic': 'Please choose a topic',
     'notes.errorContent': 'Please write at least 40 characters so the note is useful',
+    'notes.fieldAttachments': 'Attachments',
+    'notes.attachmentsHint': 'Optional: scanned pages, diagrams (PDF/images)',
     'notes.publish': 'Publish to repository',
 
     /* ModerationPage */
@@ -125,6 +127,8 @@ export const notesDict = {
     'notes.errorChapter': 'कृपया एक अध्याय चुनें',
     'notes.errorTopic': 'कृपया एक टॉपिक चुनें',
     'notes.errorContent': 'कृपया कम से कम 40 अक्षर लिखें ताकि नोट उपयोगी हो',
+    'notes.fieldAttachments': 'संलग्नक',
+    'notes.attachmentsHint': 'वैकल्पिक: स्कैन किए पृष्ठ, आरेख (PDF/चित्र)',
     'notes.publish': 'भंडार में प्रकाशित करें',
 
     /* ModerationPage */

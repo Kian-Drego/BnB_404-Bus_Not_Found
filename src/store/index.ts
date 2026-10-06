@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { notes as seedNotes } from '../data'
-import type { ApplicationStatus, Note, TrackerEntry } from '../types'
+import { notes as seedNotes, questions as seedQuestions } from '../data'
+import type { ApplicationStatus, Note, PaperUpload, Question, TrackerEntry } from '../types'
 import { uid } from '../lib/utils'
 
 /* ------------------------------------------------------------------ */
@@ -99,7 +99,10 @@ interface NotesState {
   flaggedIds: string[]
   hiddenIds: string[]
   addNote: (
-    n: Pick<Note, 'title' | 'type' | 'subjectId' | 'chapterId' | 'topicId' | 'author' | 'content'>,
+    n: Pick<
+      Note,
+      'title' | 'type' | 'subjectId' | 'chapterId' | 'topicId' | 'author' | 'content' | 'attachments'
+    >,
   ) => Note
   verify: (id: string) => void
   toggleFlag: (id: string) => void
@@ -152,6 +155,53 @@ export const useNotes = create<NotesState>()(
     { name: 'eduvault-notes' },
   ),
 )
+
+/* ------------------------------------------------------------------ */
+/*  Module A: contributed questions + PDF paper uploads                */
+/* ------------------------------------------------------------------ */
+
+interface QuestionsState {
+  /** User-contributed questions (newest first). */
+  uploaded: Question[]
+  /** PDF paper uploads that were split into question bundles. */
+  uploads: PaperUpload[]
+  /** Add contributed questions; ids are assigned here. Returns the created records. */
+  addQuestions: (qs: Array<Omit<Question, 'id'>>) => Question[]
+  /** Register a PDF paper upload (bundles reference question ids). */
+  addUpload: (u: Omit<PaperUpload, 'id' | 'createdAt'>) => PaperUpload
+  /** Remove an upload and every question that came from it. */
+  removeUpload: (uploadId: string) => void
+}
+
+export const useQuestions = create<QuestionsState>()(
+  persist(
+    (set) => ({
+      uploaded: [],
+      uploads: [],
+      addQuestions: (qs) => {
+        const created = qs.map((q) => ({ ...q, id: uid() }))
+        set((s) => ({ uploaded: [...created, ...s.uploaded] }))
+        return created
+      },
+      addUpload: (u) => {
+        const upload: PaperUpload = { ...u, id: uid(), createdAt: new Date().toISOString() }
+        set((s) => ({ uploads: [upload, ...s.uploads] }))
+        return upload
+      },
+      removeUpload: (uploadId) =>
+        set((s) => ({
+          uploads: s.uploads.filter((u) => u.id !== uploadId),
+          uploaded: s.uploaded.filter((q) => q.uploadId !== uploadId),
+        })),
+    }),
+    { name: 'eduvault-questions' },
+  ),
+)
+
+/** Merge contributed questions with the seed bank (contributions first). */
+export function mergeQuestions(uploaded: Question[]): Question[] {
+  return [...uploaded, ...seedQuestions]
+}
 
 /** Merge seed notes with uploads and apply moderator overlays. */
 export function mergeNotes(

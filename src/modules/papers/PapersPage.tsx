@@ -1,12 +1,26 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ClipboardList, Search, SearchX, X } from 'lucide-react'
-import { questions, subjects } from '../../data'
+import {
+  ArrowRight,
+  Check,
+  ClipboardList,
+  Package,
+  Plus,
+  Search,
+  SearchX,
+  Trash2,
+  Upload,
+  X,
+} from 'lucide-react'
+import { subjects, taxonomyOf } from '../../data'
 import { DIFFICULTIES, EXAM_TYPES } from '../../types'
-import { useWorksheet } from '../../store'
+import { mergeQuestions, useQuestions, useWorksheet } from '../../store'
+import { formatDate } from '../../lib/utils'
 import { useT } from '../../i18n'
 import { DIFFICULTY_HI, enumLabel, EXAM_TYPE_HI } from '../../i18n/enums'
+import { AttachmentChips } from '../../components/Attachments'
 import {
+  Badge,
   Button,
   Card,
   CardBody,
@@ -27,16 +41,28 @@ export function PapersPage() {
   const [examType, setExamType] = useState('')
   const [difficulty, setDifficulty] = useState('')
   const [search, setSearch] = useState('')
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({})
 
   const worksheetCount = useWorksheet((s) => s.ids.length)
+  const worksheetToggle = useWorksheet((s) => s.toggle)
+  const worksheetIds = useWorksheet((s) => s.ids)
+  const uploadedQs = useQuestions((s) => s.uploaded)
+  const uploads = useQuestions((s) => s.uploads)
+  const removeUpload = useQuestions((s) => s.removeUpload)
+
+  const allQuestions = useMemo(() => mergeQuestions(uploadedQs), [uploadedQs])
+  const questionById = useMemo(
+    () => new Map(allQuestions.map((q) => [q.id, q])),
+    [allQuestions],
+  )
 
   const selectedSubject = subjects.find((s) => s.id === subjectId)
   const chapterOptions = selectedSubject?.chapters ?? []
   const topicOptions = chapterOptions.find((c) => c.id === chapterId)?.topics ?? []
-  const years = [...new Set(questions.map((q) => q.year))].sort((a, b) => b - a)
+  const years = [...new Set(allQuestions.map((q) => q.year))].sort((a, b) => b - a)
 
   const term = search.trim().toLowerCase()
-  const filtered = questions.filter((q) => {
+  const filtered = allQuestions.filter((q) => {
     if (subjectId && q.subjectId !== subjectId) return false
     if (chapterId && q.chapterId !== chapterId) return false
     if (topicId && q.topicId !== topicId) return false
@@ -63,7 +89,18 @@ export function PapersPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('papers.title')} subtitle={t('papers.subtitle')} />
+      <PageHeader
+        title={t('papers.title')}
+        subtitle={t('papers.subtitle')}
+        actions={
+          <Link to="/papers/contribute">
+            <Button>
+              <Upload className="h-4 w-4" />
+              {t('papers.contribute.button')}
+            </Button>
+          </Link>
+        }
+      />
 
       {worksheetCount > 0 && (
         <Card className="border-lavender-200 bg-lavender-100/60 dark:border-brand-500/25 dark:bg-brand-500/10">
@@ -87,6 +124,140 @@ export function PapersPage() {
             </Link>
           </CardBody>
         </Card>
+      )}
+
+      {uploads.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
+            {t('papers.uploads.title')}
+          </h2>
+          {uploads.map((u) => {
+            const tax = taxonomyOf(u)
+            return (
+              <Card key={u.id} className="p-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <AttachmentChips attachments={[u.attachment]} />
+                    <h3 className="mt-2 text-sm font-bold text-zinc-900 dark:text-zinc-50">
+                      {tax.subject?.name ?? t('papers.unknownSubject')} ·{' '}
+                      {tax.chapter?.name}
+                    </h3>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                      <Badge color="gray">
+                        {enumLabel(EXAM_TYPE_HI, u.examType, lang)} {u.year}
+                      </Badge>
+                      <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                        {t('papers.contributedBy', { name: u.contributedBy })} ·{' '}
+                        {formatDate(u.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="px-2 text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-500/10 dark:hover:text-rose-300"
+                    aria-label={t('papers.uploads.confirmRemove').replace('?', '')}
+                    onClick={() => {
+                      if (window.confirm(t('papers.uploads.confirmRemove')))
+                        removeUpload(u.id)
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
+                    {t('papers.uploads.topicsInPdf')}:
+                  </span>
+                  {u.topicsInPdf.map((topic) => (
+                    <Badge key={topic} color="lavender">
+                      {topic}
+                    </Badge>
+                  ))}
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  {u.bundles.map((b) => {
+                    const bundleQuestions = b.questionIds
+                      .map((id) => questionById.get(id))
+                      .filter((q): q is NonNullable<typeof q> => Boolean(q))
+                    const countKey =
+                      bundleQuestions.length === 1
+                        ? 'papers.uploads.questionCountOne'
+                        : 'papers.uploads.questionCountMany'
+                    const open = Boolean(expanded[`${u.id}:${b.id}`])
+                    return (
+                      <div
+                        key={b.id}
+                        className="theme-fade rounded-xl border border-zinc-200 dark:border-zinc-700"
+                      >
+                        <div className="flex flex-wrap items-center gap-2 px-3 py-2">
+                          <Package className="h-4 w-4 shrink-0 text-brand-500" />
+                          <span className="min-w-0 flex-1 text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+                            {b.title}
+                          </span>
+                          <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                            {t(countKey, { n: bundleQuestions.length })}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="px-2"
+                            onClick={() =>
+                              setExpanded((prev) => ({
+                                ...prev,
+                                [`${u.id}:${b.id}`]: !open,
+                              }))
+                            }
+                            aria-expanded={open}
+                          >
+                            {open ? t('papers.uploads.collapse') : t('papers.uploads.expand')}
+                          </Button>
+                        </div>
+                        {open && (
+                          <ul className="space-y-1.5 border-t border-zinc-100 px-3 py-2 dark:border-zinc-800">
+                            {bundleQuestions.map((q, i) => (
+                              <li
+                                key={q.id}
+                                className="flex items-center gap-3 text-sm"
+                              >
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-brand-100 text-[11px] font-bold text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
+                                  {i + 1}
+                                </span>
+                                <span className="min-w-0 flex-1 truncate text-zinc-700 dark:text-zinc-200">
+                                  {q.text}
+                                </span>
+                                <Badge color="amber">
+                                  {t('papers.marks', { n: q.marks })}
+                                </Badge>
+                                <Button
+                                  variant={
+                                    worksheetIds.includes(q.id) ? 'secondary' : 'primary'
+                                  }
+                                  size="sm"
+                                  className="px-2"
+                                  onClick={() => worksheetToggle(q.id)}
+                                  aria-pressed={worksheetIds.includes(q.id)}
+                                >
+                                  {worksheetIds.includes(q.id) ? (
+                                    <Check className="h-4 w-4" />
+                                  ) : (
+                                    <Plus className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </Card>
+            )
+          })}
+        </section>
       )}
 
       <Card>
@@ -204,7 +375,10 @@ export function PapersPage() {
       </Card>
 
       <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        {t('papers.showingCount', { shown: filtered.length, total: questions.length })}
+        {t('papers.showingCount', {
+          shown: filtered.length,
+          total: allQuestions.length,
+        })}
       </p>
 
       {filtered.length === 0 ? (
