@@ -47,7 +47,7 @@ export function Layout() {
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white shadow-md shadow-brand-600/25 dark:bg-brand-500 dark:text-brand-950">
               <GraduationCap className="h-5 w-5" />
             </span>
-            <span className="text-lg font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
+            <span className="hidden text-lg font-extrabold tracking-tight text-zinc-900 min-[420px]:inline dark:text-zinc-50">
               Edu<span className="text-brand-600 dark:text-brand-400">Vault</span>
             </span>
           </Link>

@@ -133,7 +133,7 @@ export function WorksheetPage() {
         {ordered.map((q, i) => {
           const subject = getSubject(q.subjectId)
           return (
-            <Card key={q.id} className="flex items-center gap-4 px-4 py-3">
+            <Card key={q.id} className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:gap-4">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-xs font-bold text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
                 {t('papers.questionNumber', { n: i + 1 })}
               </span>
@@ -149,7 +149,7 @@ export function WorksheetPage() {
                   </Badge>
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-1">
+              <div className="flex shrink-0 items-center gap-1 self-end sm:self-auto">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -186,18 +186,18 @@ export function WorksheetPage() {
       </div>
 
       {/* Sticky action bar */}
-      <div className="sticky bottom-4 z-10">
-        <Card className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 shadow-lg shadow-zinc-900/5 dark:shadow-black/40">
-          <Button variant="danger" onClick={clearAll}>
+      <div className="sticky bottom-[max(1rem,env(safe-area-inset-bottom))] z-10">
+        <Card className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 shadow-lg shadow-zinc-900/5 max-sm:flex-col max-sm:items-stretch dark:shadow-black/40">
+          <Button variant="danger" onClick={clearAll} className="max-sm:w-full">
             <Trash2 className="h-4 w-4" />
             {t('papers.clearAll')}
           </Button>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="primary" onClick={() => void exportQuestionPaper(ordered)}>
+          <div className="flex flex-wrap gap-2 max-sm:w-full max-sm:flex-col">
+            <Button variant="primary" className="max-sm:w-full" onClick={() => void exportQuestionPaper(ordered)}>
               <FileDown className="h-4 w-4" />
               {t('papers.downloadPaperPdf')}
             </Button>
-            <Button variant="secondary" onClick={() => void exportAnswerKey(ordered)}>
+            <Button variant="secondary" className="max-sm:w-full" onClick={() => void exportAnswerKey(ordered)}>
               <FileCheck2 className="h-4 w-4" />
               {t('papers.downloadKeyPdf')}
             </Button>

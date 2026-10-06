@@ -15,7 +15,7 @@ export function LanguageToggle() {
       title={t('lang.label')}
       className="theme-fade flex h-9 items-center gap-1 rounded-xl border border-zinc-200 bg-white p-1 shadow-sm dark:border-zinc-700 dark:bg-zinc-900"
     >
-      <Languages className="ml-1 h-4 w-4 shrink-0 text-brand-500" aria-hidden />
+      <Languages className="ml-1 hidden h-4 w-4 shrink-0 text-brand-500 min-[420px]:block" aria-hidden />
       {LANGUAGES.map((l) => (
         <button
           key={l.code}

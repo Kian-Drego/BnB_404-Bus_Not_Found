@@ -603,7 +603,7 @@ export function ResumePage() {
                           .join(' – ')
                         return (
                           <div key={e.id} className="mt-3">
-                            <div className="flex items-baseline justify-between gap-3">
+                            <div className="flex flex-wrap items-baseline justify-between gap-x-3">
                               <p className="text-sm font-bold">{title || e.school.trim()}</p>
                               {years && (
                                 <p className="shrink-0 text-xs text-zinc-500">{years}</p>
@@ -631,7 +631,7 @@ export function ResumePage() {
                           .join(' – ')
                         return (
                           <div key={e.id} className="mt-3">
-                            <div className="flex items-baseline justify-between gap-3">
+                            <div className="flex flex-wrap items-baseline justify-between gap-x-3">
                               <p className="text-sm font-bold">{title}</p>
                               {dates && (
                                 <p className="shrink-0 text-xs text-zinc-500">{dates}</p>

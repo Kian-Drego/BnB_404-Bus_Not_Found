@@ -18,7 +18,7 @@ export function VoteButtons({ note, layout = 'col' }: VoteButtonsProps) {
   const myVote = mine[note.id]
 
   const btnBase =
-    'theme-fade flex items-center justify-center rounded-lg p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 dark:focus-visible:ring-brand-500'
+    'theme-fade flex items-center justify-center rounded-lg p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 dark:focus-visible:ring-brand-500'
   const inactive =
     'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-300'
 
