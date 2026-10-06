@@ -4,6 +4,8 @@ import { ArrowRight, ClipboardList, Search, SearchX, X } from 'lucide-react'
 import { questions, subjects } from '../../data'
 import { DIFFICULTIES, EXAM_TYPES } from '../../types'
 import { useWorksheet } from '../../store'
+import { useT } from '../../i18n'
+import { DIFFICULTY_HI, enumLabel, EXAM_TYPE_HI } from '../../i18n/enums'
 import {
   Button,
   Card,
@@ -17,6 +19,7 @@ import {
 import { QuestionCard } from './QuestionCard'
 
 export function PapersPage() {
+  const { t, lang } = useT()
   const [subjectId, setSubjectId] = useState('')
   const [chapterId, setChapterId] = useState('')
   const [topicId, setTopicId] = useState('')
@@ -60,10 +63,7 @@ export function PapersPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Past Papers & Question Repository"
-        subtitle="Search and filter real exam questions by subject, chapter, topic, year and exam term — then add the best ones to your worksheet to build a custom practice paper."
-      />
+      <PageHeader title={t('papers.title')} subtitle={t('papers.subtitle')} />
 
       {worksheetCount > 0 && (
         <Card className="border-lavender-200 bg-lavender-100/60 dark:border-brand-500/25 dark:bg-brand-500/10">
@@ -73,14 +73,16 @@ export function PapersPage() {
                 <ClipboardList className="h-4.5 w-4.5" />
               </span>
               <p className="text-sm font-semibold text-lavender-800 dark:text-brand-200">
-                {worksheetCount} question{worksheetCount === 1 ? '' : 's'} in your worksheet
+                {t(worksheetCount === 1 ? 'papers.worksheetCountOne' : 'papers.worksheetCountMany', {
+                  n: worksheetCount,
+                })}
               </p>
             </div>
             <Link
               to="/worksheet"
               className="theme-fade inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:text-brand-800 dark:text-brand-300 dark:hover:text-brand-200"
             >
-              Open worksheet
+              {t('papers.openWorksheet')}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </CardBody>
@@ -91,18 +93,18 @@ export function PapersPage() {
         <CardBody className="space-y-4">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
-              Filter the question bank
+              {t('papers.filterTitle')}
             </h2>
             {hasFilters && (
               <Button variant="ghost" size="sm" onClick={clearFilters}>
                 <X className="h-4 w-4" />
-                Clear all
+                {t('papers.clearAll')}
               </Button>
             )}
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Field label="Subject">
+            <Field label={t('papers.filterSubject')}>
               <Select
                 value={subjectId}
                 onChange={(e) => {
@@ -111,7 +113,7 @@ export function PapersPage() {
                   setTopicId('')
                 }}
               >
-                <option value="">All subjects</option>
+                <option value="">{t('papers.allSubjects')}</option>
                 {subjects.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name}
@@ -120,7 +122,7 @@ export function PapersPage() {
               </Select>
             </Field>
 
-            <Field label="Chapter">
+            <Field label={t('papers.filterChapter')}>
               <Select
                 value={chapterId}
                 disabled={!subjectId}
@@ -129,7 +131,7 @@ export function PapersPage() {
                   setTopicId('')
                 }}
               >
-                <option value="">All chapters</option>
+                <option value="">{t('papers.allChapters')}</option>
                 {chapterOptions.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -138,24 +140,24 @@ export function PapersPage() {
               </Select>
             </Field>
 
-            <Field label="Topic">
+            <Field label={t('papers.filterTopic')}>
               <Select
                 value={topicId}
                 disabled={!chapterId}
                 onChange={(e) => setTopicId(e.target.value)}
               >
-                <option value="">All topics</option>
-                {topicOptions.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name}
+                <option value="">{t('papers.allTopics')}</option>
+                {topicOptions.map((topic) => (
+                  <option key={topic.id} value={topic.id}>
+                    {topic.name}
                   </option>
                 ))}
               </Select>
             </Field>
 
-            <Field label="Year">
+            <Field label={t('papers.filterYear')}>
               <Select value={year} onChange={(e) => setYear(e.target.value)}>
-                <option value="">All years</option>
+                <option value="">{t('papers.allYears')}</option>
                 {years.map((y) => (
                   <option key={y} value={y}>
                     {y}
@@ -164,34 +166,34 @@ export function PapersPage() {
               </Select>
             </Field>
 
-            <Field label="Exam Type">
+            <Field label={t('papers.filterExamType')}>
               <Select value={examType} onChange={(e) => setExamType(e.target.value)}>
-                <option value="">All exam types</option>
-                {EXAM_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
+                <option value="">{t('papers.allExamTypes')}</option>
+                {EXAM_TYPES.map((et) => (
+                  <option key={et} value={et}>
+                    {enumLabel(EXAM_TYPE_HI, et, lang)}
                   </option>
                 ))}
               </Select>
             </Field>
 
-            <Field label="Difficulty">
+            <Field label={t('papers.filterDifficulty')}>
               <Select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
-                <option value="">All difficulties</option>
+                <option value="">{t('papers.allDifficulties')}</option>
                 {DIFFICULTIES.map((d) => (
                   <option key={d} value={d}>
-                    {d}
+                    {enumLabel(DIFFICULTY_HI, d, lang)}
                   </option>
                 ))}
               </Select>
             </Field>
 
-            <Field label="Search" className="sm:col-span-2">
+            <Field label={t('papers.filterSearch')} className="sm:col-span-2">
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                 <Input
                   className="pl-9"
-                  placeholder="Search question text or solutions..."
+                  placeholder={t('papers.searchPlaceholder')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -202,21 +204,19 @@ export function PapersPage() {
       </Card>
 
       <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        Showing{' '}
-        <span className="font-semibold text-zinc-800 dark:text-zinc-100">{filtered.length}</span> of{' '}
-        {questions.length} questions
+        {t('papers.showingCount', { shown: filtered.length, total: questions.length })}
       </p>
 
       {filtered.length === 0 ? (
         <EmptyState
           icon={SearchX}
-          title="No questions match your filters"
-          description="Try broadening the search term or clearing one or more filters."
+          title={t('papers.emptyTitle')}
+          description={t('papers.emptyDesc')}
           action={
             hasFilters ? (
               <Button variant="secondary" size="sm" onClick={clearFilters}>
                 <X className="h-4 w-4" />
-                Clear all filters
+                {t('common.clearFilters')}
               </Button>
             ) : undefined
           }

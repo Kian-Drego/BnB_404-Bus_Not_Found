@@ -6,6 +6,8 @@ import { subjects, taxonomyOf } from '../../data'
 import { mergeNotes, noteScore, useNotes, useVotes } from '../../store'
 import { formatDate } from '../../lib/utils'
 import { Badge, Button, Card, CardBody, EmptyState, Input, PageHeader, Select } from '../../components/ui'
+import { useT } from '../../i18n'
+import { enumLabel, NOTE_TYPE_HI } from '../../i18n/enums'
 import { VoteButtons } from './VoteButtons'
 
 type TypeFilter = 'all' | NoteType
@@ -13,6 +15,7 @@ type SortMode = 'top' | 'newest' | 'az'
 
 /** A single note row: voting rail on the left, content summary on the right. */
 function NoteCard({ note }: { note: Note }) {
+  const { t, lang } = useT()
   const tax = taxonomyOf(note)
   const taxonomy = [tax.subject?.name, tax.chapter?.name, tax.topic?.name].filter(Boolean).join(' · ')
 
@@ -26,18 +29,18 @@ function NoteCard({ note }: { note: Note }) {
           <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
             <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">{note.title}</h3>
             <Badge color={note.type === 'note' ? 'blue' : 'lavender'}>
-              {note.type === 'note' ? 'Note' : 'Answer script'}
+              <span className="capitalize">{enumLabel(NOTE_TYPE_HI, note.type, lang)}</span>
             </Badge>
             {note.verified && (
               <Badge color="mint">
                 <BadgeCheck className="h-3 w-3" />
-                Verified
+                {t('common.verified')}
               </Badge>
             )}
             {note.flagged && (
               <Badge color="rose">
                 <Flag className="h-3 w-3" />
-                Flagged
+                {t('common.flagged')}
               </Badge>
             )}
           </div>
@@ -46,7 +49,8 @@ function NoteCard({ note }: { note: Note }) {
             {note.content}
           </p>
           <p className="text-xs text-zinc-400 dark:text-zinc-500">
-            by <span className="font-medium text-zinc-500 dark:text-zinc-400">{note.author}</span>
+            {t('notes.by')}{' '}
+            <span className="font-medium text-zinc-500 dark:text-zinc-400">{note.author}</span>
             {' · '}
             {formatDate(note.createdAt)}
           </p>
@@ -57,6 +61,7 @@ function NoteCard({ note }: { note: Note }) {
 }
 
 export function NotesPage() {
+  const { t, lang } = useT()
   const notesState = useNotes()
   const mine = useVotes((s) => s.mine)
 
@@ -115,20 +120,20 @@ export function NotesPage() {
   return (
     <div>
       <PageHeader
-        title="Notes & Content Repository"
-        subtitle="Peer-reviewed notes and answer scripts, shared openly by students — no account needed. Community moderation keeps quality high."
+        title={t('notes.title')}
+        subtitle={t('notes.subtitle')}
         actions={
           <>
             <Link to="/notes/moderation">
               <Button variant="secondary">
                 <ShieldCheck className="h-4 w-4" />
-                Moderation
+                {t('notes.moderation')}
               </Button>
             </Link>
             <Link to="/notes/upload">
               <Button>
                 <PenLine className="h-4 w-4" />
-                Upload notes
+                {t('notes.upload')}
               </Button>
             </Link>
           </>
@@ -140,18 +145,22 @@ export function NotesPage() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search titles, content or authors…"
-            aria-label="Search notes"
+            placeholder={t('notes.searchPlaceholder')}
+            aria-label={t('notes.searchAria')}
           />
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
             <Select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as TypeFilter)}
-              aria-label="Filter by type"
+              aria-label={t('notes.filterTypeAria')}
             >
-              <option value="all">All types</option>
-              <option value="note">Notes</option>
-              <option value="answer-script">Answer scripts</option>
+              <option value="all">{t('notes.allTypes')}</option>
+              <option value="note" className="capitalize">
+                {enumLabel(NOTE_TYPE_HI, 'note', lang)}
+              </option>
+              <option value="answer-script" className="capitalize">
+                {enumLabel(NOTE_TYPE_HI, 'answer-script', lang)}
+              </option>
             </Select>
             <Select
               value={subjectId}
@@ -160,9 +169,9 @@ export function NotesPage() {
                 setChapterId('')
                 setTopicId('')
               }}
-              aria-label="Filter by subject"
+              aria-label={t('notes.filterSubjectAria')}
             >
-              <option value="">All subjects</option>
+              <option value="">{t('notes.allSubjects')}</option>
               {subjects.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
@@ -176,9 +185,9 @@ export function NotesPage() {
                 setTopicId('')
               }}
               disabled={!subjectId}
-              aria-label="Filter by chapter"
+              aria-label={t('notes.filterChapterAria')}
             >
-              <option value="">All chapters</option>
+              <option value="">{t('notes.allChapters')}</option>
               {chapters.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -189,34 +198,35 @@ export function NotesPage() {
               value={topicId}
               onChange={(e) => setTopicId(e.target.value)}
               disabled={!chapterId}
-              aria-label="Filter by topic"
+              aria-label={t('notes.filterTopicAria')}
             >
-              <option value="">All topics</option>
-              {topics.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
+              <option value="">{t('notes.allTopics')}</option>
+              {topics.map((topic) => (
+                <option key={topic.id} value={topic.id}>
+                  {topic.name}
                 </option>
               ))}
             </Select>
             <Select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortMode)}
-              aria-label="Sort notes"
+              aria-label={t('notes.sortAria')}
             >
-              <option value="top">Top rated</option>
-              <option value="newest">Newest</option>
-              <option value="az">A–Z</option>
+              <option value="top">{t('notes.sortTop')}</option>
+              <option value="newest">{t('notes.sortNewest')}</option>
+              <option value="az">{t('notes.sortAZ')}</option>
             </Select>
           </div>
           <div className="flex items-center justify-between gap-3 pt-1">
             <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-              Showing {visibleNotes.length} of {allNotes.length}{' '}
-              {allNotes.length === 1 ? 'note' : 'notes'}
+              {allNotes.length === 1
+                ? t('notes.showingOne', { shown: visibleNotes.length, total: allNotes.length })
+                : t('notes.showing', { shown: visibleNotes.length, total: allNotes.length })}
             </p>
             {filtersActive && (
               <Button variant="ghost" size="sm" onClick={clearFilters}>
                 <X className="h-4 w-4" />
-                Clear filters
+                {t('common.clearFilters')}
               </Button>
             )}
           </div>
@@ -226,8 +236,8 @@ export function NotesPage() {
       {visibleNotes.length === 0 ? (
         <EmptyState
           icon={NotebookPen}
-          title="No notes match your filters"
-          description="Try widening your search or clearing the filters to see everything in the repository."
+          title={t('notes.emptyTitle')}
+          description={t('notes.emptyDesc')}
         />
       ) : (
         <div className="space-y-3">

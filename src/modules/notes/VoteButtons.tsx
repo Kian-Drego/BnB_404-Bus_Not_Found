@@ -2,6 +2,7 @@ import { ArrowBigDown, ArrowBigUp } from 'lucide-react'
 import type { Note } from '../../types'
 import { noteScore, useVotes } from '../../store'
 import { cn } from '../../lib/utils'
+import { useT } from '../../i18n'
 
 interface VoteButtonsProps {
   note: Note
@@ -10,6 +11,7 @@ interface VoteButtonsProps {
 
 /** Reddit-style up/down vote controls with the note's live score in between. */
 export function VoteButtons({ note, layout = 'col' }: VoteButtonsProps) {
+  const { t } = useT()
   const mine = useVotes((s) => s.mine)
   const vote = useVotes((s) => s.vote)
   const score = noteScore(note, mine)
@@ -29,7 +31,7 @@ export function VoteButtons({ note, layout = 'col' }: VoteButtonsProps) {
     >
       <button
         type="button"
-        aria-label="Upvote"
+        aria-label={t('notes.upvote')}
         aria-pressed={myVote === 1}
         onClick={() => vote(note.id, 1)}
         className={cn(
@@ -55,7 +57,7 @@ export function VoteButtons({ note, layout = 'col' }: VoteButtonsProps) {
       </span>
       <button
         type="button"
-        aria-label="Downvote"
+        aria-label={t('notes.downvote')}
         aria-pressed={myVote === -1}
         onClick={() => vote(note.id, -1)}
         className={cn(

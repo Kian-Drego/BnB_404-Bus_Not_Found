@@ -1,16 +1,18 @@
 import { Link } from 'react-router-dom'
 import { Compass } from 'lucide-react'
 import { Button, EmptyState } from '../components/ui'
+import { useT } from '../i18n'
 
 export function NotFound() {
+  const { t } = useT()
   return (
     <EmptyState
       icon={Compass}
-      title="404 — Page not found"
-      description="The page you're looking for doesn't exist or has been moved."
+      title={t('notfound.title')}
+      description={t('notfound.desc')}
       action={
         <Link to="/">
-          <Button>Back to home</Button>
+          <Button>{t('notfound.action')}</Button>
         </Link>
       }
     />

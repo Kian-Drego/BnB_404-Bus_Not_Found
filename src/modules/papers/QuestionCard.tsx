@@ -3,6 +3,8 @@ import { Check, ChevronDown, ChevronUp, Plus, ShieldCheck } from 'lucide-react'
 import type { Difficulty, Question } from '../../types'
 import { taxonomyOf } from '../../data'
 import { useWorksheet } from '../../store'
+import { useT } from '../../i18n'
+import { DIFFICULTY_HI, enumLabel, EXAM_TYPE_HI } from '../../i18n/enums'
 import { Badge, Button, Card } from '../../components/ui'
 import type { BadgeColor } from '../../components/ui'
 
@@ -13,6 +15,7 @@ const difficultyColors: Record<Difficulty, BadgeColor> = {
 }
 
 export function QuestionCard({ question }: { question: Question }) {
+  const { t, lang } = useT()
   const [showSolution, setShowSolution] = useState(false)
   const ids = useWorksheet((s) => s.ids)
   const toggleWorksheet = useWorksheet((s) => s.toggle)
@@ -32,16 +35,18 @@ export function QuestionCard({ question }: { question: Question }) {
       )}
 
       <div className="mt-3 flex flex-wrap items-center gap-1.5">
-        <Badge color={subject?.color ?? 'gray'}>{subject?.name ?? 'Unknown subject'}</Badge>
+        <Badge color={subject?.color ?? 'gray'}>{subject?.name ?? t('papers.unknownSubject')}</Badge>
         <Badge color="gray">
-          {question.examType} {question.year}
+          {enumLabel(EXAM_TYPE_HI, question.examType, lang)} {question.year}
         </Badge>
-        <Badge color="amber">{question.marks} marks</Badge>
-        <Badge color={difficultyColors[question.difficulty]}>{question.difficulty}</Badge>
+        <Badge color="amber">{t('papers.marks', { n: question.marks })}</Badge>
+        <Badge color={difficultyColors[question.difficulty]}>
+          {enumLabel(DIFFICULTY_HI, question.difficulty, lang)}
+        </Badge>
         {question.verified && (
           <Badge color="mint">
             <ShieldCheck className="h-3 w-3" />
-            Verified
+            {t('common.verified')}
           </Badge>
         )}
       </div>
@@ -49,7 +54,7 @@ export function QuestionCard({ question }: { question: Question }) {
       {showSolution && (
         <div className="theme-fade mt-4 rounded-xl border border-mint-200 bg-mint-100/60 px-4 py-3 dark:border-emerald-500/20 dark:bg-emerald-500/5">
           <p className="mb-2 text-xs font-semibold tracking-wide text-mint-700 uppercase dark:text-emerald-300">
-            Solution
+            {t('papers.solution')}
           </p>
           <div className="space-y-1.5">
             {question.answer.split('\n').map((line, i) => (
@@ -69,10 +74,10 @@ export function QuestionCard({ question }: { question: Question }) {
             ) : (
               <ChevronDown className="h-4 w-4" />
             )}
-            {showSolution ? 'Hide solution' : 'View solution'}
+            {showSolution ? t('papers.hideSolution') : t('papers.viewSolution')}
           </Button>
           <span className="text-xs text-zinc-400 dark:text-zinc-500">
-            Contributed by {question.contributedBy}
+            {t('papers.contributedBy', { name: question.contributedBy })}
           </span>
         </div>
         <Button
@@ -81,7 +86,7 @@ export function QuestionCard({ question }: { question: Question }) {
           onClick={() => toggleWorksheet(question.id)}
         >
           {added ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-          {added ? 'Added' : 'Add to worksheet'}
+          {added ? t('papers.added') : t('papers.addToWorksheet')}
         </Button>
       </div>
     </Card>

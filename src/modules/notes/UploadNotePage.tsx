@@ -16,13 +16,11 @@ import {
   Select,
   Textarea,
 } from '../../components/ui'
-
-const TYPE_LABELS: Record<NoteType, string> = {
-  note: 'Note',
-  'answer-script': 'Answer script',
-}
+import { useT } from '../../i18n'
+import { enumLabel, NOTE_TYPE_HI } from '../../i18n/enums'
 
 export function UploadNotePage() {
+  const { t, lang } = useT()
   const addNote = useNotes((s) => s.addNote)
   const navigate = useNavigate()
 
@@ -50,12 +48,11 @@ export function UploadNotePage() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     const next: Record<string, string> = {}
-    if (!title.trim()) next.title = 'Please enter a title'
-    if (!subjectId) next.subjectId = 'Please choose a subject'
-    if (!chapterId) next.chapterId = 'Please choose a chapter'
-    if (!topicId) next.topicId = 'Please choose a topic'
-    if (content.trim().length < 40)
-      next.content = 'Please write at least 40 characters so the note is useful'
+    if (!title.trim()) next.title = t('notes.errorTitle')
+    if (!subjectId) next.subjectId = t('notes.errorSubject')
+    if (!chapterId) next.chapterId = t('notes.errorChapter')
+    if (!topicId) next.topicId = t('notes.errorTopic')
+    if (content.trim().length < 40) next.content = t('notes.errorContent')
     setErrors(next)
     if (Object.keys(next).length > 0) return
 
@@ -73,46 +70,43 @@ export function UploadNotePage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader
-        title="Upload notes"
-        subtitle="Share your notes and answer scripts with the community — no account or sign-up needed. Community moderation verifies new uploads before they're marked as trusted."
-      />
+      <PageHeader title={t('notes.upload')} subtitle={t('notes.uploadSubtitle')} />
 
       <Card>
         <CardBody>
           <form onSubmit={handleSubmit} noValidate className="space-y-5">
-            <Field label="Title" required error={errors.title}>
+            <Field label={t('notes.fieldTitle')} required error={errors.title}>
               <Input
                 value={title}
                 onChange={(e) => {
                   setTitle(e.target.value)
                   if (e.target.value.trim()) clearError('title')
                 }}
-                placeholder="e.g. Big-O Cheat Sheet with Growth Graphs"
+                placeholder={t('notes.titlePlaceholder')}
               />
             </Field>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Type" required>
+              <Field label={t('notes.fieldType')} required>
                 <Select value={type} onChange={(e) => setType(e.target.value as NoteType)}>
-                  {NOTE_TYPES.map((t) => (
-                    <option key={t} value={t}>
-                      {TYPE_LABELS[t]}
+                  {NOTE_TYPES.map((value) => (
+                    <option key={value} value={value} className="capitalize">
+                      {enumLabel(NOTE_TYPE_HI, value, lang)}
                     </option>
                   ))}
                 </Select>
               </Field>
-              <Field label="Author" hint="Leave blank to publish as Anonymous.">
+              <Field label={t('notes.fieldAuthor')} hint={t('notes.authorHint')}>
                 <Input
                   value={author}
                   onChange={(e) => setAuthor(e.target.value)}
-                  placeholder="Anonymous"
+                  placeholder={t('notes.authorPlaceholder')}
                 />
               </Field>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-3">
-              <Field label="Subject" required error={errors.subjectId}>
+              <Field label={t('notes.fieldSubject')} required error={errors.subjectId}>
                 <Select
                   value={subjectId}
                   onChange={(e) => {
@@ -126,7 +120,7 @@ export function UploadNotePage() {
                     }
                   }}
                 >
-                  <option value="">Choose a subject…</option>
+                  <option value="">{t('notes.chooseSubject')}</option>
                   {subjects.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.name}
@@ -134,7 +128,7 @@ export function UploadNotePage() {
                   ))}
                 </Select>
               </Field>
-              <Field label="Chapter" required error={errors.chapterId}>
+              <Field label={t('notes.fieldChapter')} required error={errors.chapterId}>
                 <Select
                   value={chapterId}
                   onChange={(e) => {
@@ -147,7 +141,7 @@ export function UploadNotePage() {
                   }}
                   disabled={!subjectId}
                 >
-                  <option value="">Choose a chapter…</option>
+                  <option value="">{t('notes.chooseChapter')}</option>
                   {chapters.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
@@ -155,7 +149,7 @@ export function UploadNotePage() {
                   ))}
                 </Select>
               </Field>
-              <Field label="Topic" required error={errors.topicId}>
+              <Field label={t('notes.fieldTopic')} required error={errors.topicId}>
                 <Select
                   value={topicId}
                   onChange={(e) => {
@@ -164,10 +158,10 @@ export function UploadNotePage() {
                   }}
                   disabled={!chapterId}
                 >
-                  <option value="">Choose a topic…</option>
-                  {topics.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.name}
+                  <option value="">{t('notes.chooseTopic')}</option>
+                  {topics.map((topic) => (
+                    <option key={topic.id} value={topic.id}>
+                      {topic.name}
                     </option>
                   ))}
                 </Select>
@@ -175,10 +169,10 @@ export function UploadNotePage() {
             </div>
 
             <Field
-              label="Content"
+              label={t('notes.fieldContent')}
               required
               error={errors.content}
-              hint="Plain text only — markdown formatting is not rendered. Write clearly and aim for at least 40 characters."
+              hint={t('notes.contentHint')}
             >
               <Textarea
                 value={content}
@@ -187,17 +181,17 @@ export function UploadNotePage() {
                   if (e.target.value.trim().length >= 40) clearError('content')
                 }}
                 rows={8}
-                placeholder="Write your note or worked answer script here…"
+                placeholder={t('notes.contentPlaceholder')}
               />
             </Field>
 
             <div className="flex flex-wrap justify-end gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-800">
               <Button type="button" variant="ghost" onClick={() => navigate(-1)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button type="submit">
                 <Send className="h-4 w-4" />
-                Publish to repository
+                {t('notes.publish')}
               </Button>
             </div>
           </form>

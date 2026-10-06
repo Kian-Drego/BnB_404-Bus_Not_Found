@@ -16,6 +16,14 @@ export interface KeywordReport {
   density: number
 }
 
+/* Check thresholds — one source of truth so pass logic and hint text never drift. */
+const SUMMARY_MIN = 40
+const SUMMARY_MAX = 500
+const VERB_RATIO_MIN = 0.6
+const SKILLS_MIN = 5
+const WORDS_MIN = 100
+const WORDS_MAX = 900
+
 /** Split a bullet textarea into individual non-empty lines. */
 export function bulletLines(bullets: string): string[] {
   return bullets
@@ -59,7 +67,10 @@ function firstWord(line: string): string {
   return word.toLowerCase().replace(/[^a-z]/g, '')
 }
 
-export function runAtsChecks(r: ResumeData): AtsCheck[] {
+export function runAtsChecks(
+  r: ResumeData,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+): AtsCheck[] {
   const bullets = allBullets(r)
   const verbHits = bullets.filter((b) => ATS_ACTION_VERBS.includes(firstWord(b))).length
   const verbRatio = bullets.length === 0 ? 1 : verbHits / bullets.length
@@ -71,54 +82,54 @@ export function runAtsChecks(r: ResumeData): AtsCheck[] {
   return [
     {
       id: 'contact',
-      label: 'Contact details',
+      label: t('resume.check.contact.label'),
       passed: Boolean(r.fullName.trim()) && r.email.includes('@') && Boolean(r.phone.trim()),
-      hint: 'Add your full name, a valid email and a phone number.',
+      hint: t('resume.check.contact.hint'),
     },
     {
       id: 'summary',
-      label: 'Professional summary',
-      passed: summary.length >= 40 && summary.length <= 500,
-      hint: 'Write 40–500 characters covering your degree, experience and goals.',
+      label: t('resume.check.summary.label'),
+      passed: summary.length >= SUMMARY_MIN && summary.length <= SUMMARY_MAX,
+      hint: t('resume.check.summary.hint', { min: SUMMARY_MIN, max: SUMMARY_MAX }),
     },
     {
       id: 'education',
-      label: 'Education entry',
+      label: t('resume.check.education.label'),
       passed: r.education.some((e) => e.school.trim() && e.degree.trim()),
-      hint: 'Add at least one education entry with school and degree filled in.',
+      hint: t('resume.check.education.hint'),
     },
     {
       id: 'action-verbs',
-      label: 'Action verbs',
-      passed: verbRatio >= 0.6,
-      hint: 'Start at least 60% of bullets with a verb like "developed", "led" or "optimised".',
+      label: t('resume.check.actionVerbs.label'),
+      passed: verbRatio >= VERB_RATIO_MIN,
+      hint: t('resume.check.actionVerbs.hint', { pct: Math.round(VERB_RATIO_MIN * 100) }),
     },
     {
       id: 'quantified',
-      label: 'Quantified impact',
+      label: t('resume.check.quantified.label'),
       passed: bullets.some((b) => /[\d%]/.test(b)),
-      hint: 'Add a number or percentage to a bullet, e.g. "Reduced load time by 35%".',
+      hint: t('resume.check.quantified.hint'),
     },
     {
       id: 'skills',
-      label: 'Skills list',
-      passed: skillList(r.skills).length >= 5,
-      hint: 'List at least 5 comma-separated skills relevant to your target role.',
+      label: t('resume.check.skills.label'),
+      passed: skillList(r.skills).length >= SKILLS_MIN,
+      hint: t('resume.check.skills.hint', { n: SKILLS_MIN }),
     },
     {
       id: 'pronouns',
-      label: 'No first-person pronouns',
+      label: t('resume.check.pronouns.label'),
       passed: !pronounRe.test(prose),
-      hint: 'Remove "I", "me", "my", "we" and "our" — write in implied first person.',
+      hint: t('resume.check.pronouns.hint'),
     },
     {
       id: 'length',
-      label: 'Resume length',
-      passed: wordCount >= 100 && wordCount <= 900,
+      label: t('resume.check.length.label'),
+      passed: wordCount >= WORDS_MIN && wordCount <= WORDS_MAX,
       hint:
-        wordCount < 100
-          ? 'Too thin — aim for 100–900 words so parsers have content to index.'
-          : 'Too long — trim to under 900 words (about one page).',
+        wordCount < WORDS_MIN
+          ? t('resume.check.length.hintShort', { min: WORDS_MIN, max: WORDS_MAX })
+          : t('resume.check.length.hintLong', { max: WORDS_MAX }),
     },
   ]
 }

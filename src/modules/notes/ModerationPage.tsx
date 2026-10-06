@@ -4,12 +4,15 @@ import { taxonomyOf } from '../../data'
 import { mergeNotes, useNotes } from '../../store'
 import { formatDate } from '../../lib/utils'
 import { Badge, Button, Card, CardBody, EmptyState, PageHeader } from '../../components/ui'
+import { useT } from '../../i18n'
+import { enumLabel, NOTE_TYPE_HI } from '../../i18n/enums'
 import { VoteButtons } from './VoteButtons'
 
 const flagTint =
   'border-amber-300! bg-amber-50! text-amber-800! hover:bg-amber-100! hover:border-amber-300! dark:border-amber-500/30! dark:bg-amber-500/10! dark:text-amber-200! dark:hover:bg-amber-500/20!'
 
 export function ModerationPage() {
+  const { t, lang } = useT()
   const notesState = useNotes()
 
   const allNotes = useMemo(() => mergeNotes(notesState), [notesState])
@@ -28,10 +31,7 @@ export function ModerationPage() {
 
   return (
     <div>
-      <PageHeader
-        title="Moderation queue"
-        subtitle="Open community moderation — anyone can verify uploads, review flagged material, and keep the repository trustworthy."
-      />
+      <PageHeader title={t('notes.modTitle')} subtitle={t('notes.modSubtitle')} />
 
       <div className="mb-6 grid grid-cols-3 gap-3 sm:gap-4">
         <Card>
@@ -40,7 +40,7 @@ export function ModerationPage() {
               {allNotes.length}
             </p>
             <p className="mt-1 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-              Total notes
+              {t('notes.statTotal')}
             </p>
           </CardBody>
         </Card>
@@ -50,7 +50,7 @@ export function ModerationPage() {
               {pendingCount}
             </p>
             <p className="mt-1 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-              Pending verification
+              {t('notes.statPending')}
             </p>
           </CardBody>
         </Card>
@@ -60,7 +60,7 @@ export function ModerationPage() {
               {flaggedCount}
             </p>
             <p className="mt-1 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-              Flagged
+              {t('common.flagged')}
             </p>
           </CardBody>
         </Card>
@@ -69,8 +69,8 @@ export function ModerationPage() {
       {queue.length === 0 ? (
         <EmptyState
           icon={PartyPopper}
-          title="Queue is clear"
-          description="Every note in the repository is verified and no flags are waiting for review. Great work!"
+          title={t('notes.queueClearTitle')}
+          description={t('notes.queueClearDesc')}
         />
       ) : (
         <div className="space-y-3">
@@ -91,18 +91,20 @@ export function ModerationPage() {
                         {note.title}
                       </h3>
                       <Badge color={note.type === 'note' ? 'blue' : 'lavender'}>
-                        {note.type === 'note' ? 'Note' : 'Answer script'}
+                        <span className="capitalize">
+                          {enumLabel(NOTE_TYPE_HI, note.type, lang)}
+                        </span>
                       </Badge>
                       {note.verified && (
                         <Badge color="mint">
                           <BadgeCheck className="h-3 w-3" />
-                          Verified
+                          {t('common.verified')}
                         </Badge>
                       )}
                       {note.flagged && (
                         <Badge color="rose">
                           <Flag className="h-3 w-3" />
-                          Flagged
+                          {t('common.flagged')}
                         </Badge>
                       )}
                     </div>
@@ -113,7 +115,7 @@ export function ModerationPage() {
                       {note.content}
                     </p>
                     <p className="text-xs text-zinc-400 dark:text-zinc-500">
-                      by{' '}
+                      {t('notes.by')}{' '}
                       <span className="font-medium text-zinc-500 dark:text-zinc-400">
                         {note.author}
                       </span>
@@ -124,7 +126,7 @@ export function ModerationPage() {
                   <div className="flex shrink-0 flex-wrap gap-2 sm:flex-col sm:items-stretch">
                     <Button size="sm" onClick={() => notesState.verify(note.id)}>
                       <BadgeCheck className="h-4 w-4" />
-                      Verify
+                      {t('notes.verify')}
                     </Button>
                     <Button
                       size="sm"
@@ -133,18 +135,17 @@ export function ModerationPage() {
                       onClick={() => notesState.toggleFlag(note.id)}
                     >
                       <Flag className="h-4 w-4" fill={note.flagged ? 'currentColor' : 'none'} />
-                      {note.flagged ? 'Unflag' : 'Flag'}
+                      {note.flagged ? t('notes.unflag') : t('notes.flag')}
                     </Button>
                     <Button
                       size="sm"
                       variant="danger"
                       onClick={() => {
-                        if (window.confirm('Remove this note from the repository?'))
-                          notesState.hide(note.id)
+                        if (window.confirm(t('notes.confirmRemove'))) notesState.hide(note.id)
                       }}
                     >
                       <Trash2 className="h-4 w-4" />
-                      Remove
+                      {t('notes.remove')}
                     </Button>
                   </div>
                 </CardBody>

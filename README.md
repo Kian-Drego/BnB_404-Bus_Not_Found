@@ -15,6 +15,7 @@ A responsive, **100% free** student-led platform for undergraduates, combining f
 
 - **Vite 8 + React 19 + TypeScript** (strict: `verbatimModuleSyntax`, `noUnusedLocals`)
 - **Tailwind CSS v4** — pastel design tokens (`lavender`, `mint`, `softblue`, `peach`), class-based **dark/light mode** persisted to `localStorage`
+- **Bilingual UI (English / हिंदी)** — full Hindi translation of the interface (286 strings) with a side-by-side language toggle, bilingual option labels (`हिंदी (English)`), and Noto Sans Devanagari typography; PDF exports remain English for ATS/font compatibility
 - **React Router v7** — clean dynamic routes (`/papers`, `/worksheet`, `/notes`, `/notes/upload`, `/notes/moderation`, `/resume`, `/scholarships`, `/scholarships/:id`, `/tracker`)
 - **Zustand + persist** — worksheet cart, votes, uploads, moderation overlays, application tracker, resume draft, theme and role all persist locally (no backend, private by default)
 - **jsPDF** — vector PDF generation, lazy-loaded on export so the main bundle stays light
@@ -36,7 +37,8 @@ npm run preview    # serve the production build
 src/
 ├── types/index.ts          # Shared domain models (schema)
 ├── data/index.ts           # Seed taxonomy, questions, notes, scholarships, ATS keyword bank
-├── store/index.ts          # Zustand persisted stores (theme, role, votes, worksheet, notes, tracker)
+├── i18n/                   # Language store, en/hi dictionaries (per-module), bilingual enum maps
+├── store/index.ts          # Zustand persisted stores (theme, votes, worksheet, notes, tracker)
 ├── components/
 │   ├── ui/                 # Design-system primitives (Button, Card, Badge, Input, Field, …)
 │   └── layout/             # App shell: navbar, theme toggle, role switcher, footer

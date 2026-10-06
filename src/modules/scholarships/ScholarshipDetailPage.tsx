@@ -16,6 +16,14 @@ import { scholarships } from '../../data'
 import { APPLICATION_STATUSES } from '../../types'
 import type { ApplicationStatus, ScholarshipCategory } from '../../types'
 import { useTracker } from '../../store'
+import { useT } from '../../i18n'
+import {
+  CATEGORY_HI,
+  DOCUMENT_HI,
+  REGION_HI,
+  STATUS_HI,
+  enumLabel,
+} from '../../i18n/enums'
 import {
   Badge,
   Button,
@@ -46,15 +54,19 @@ const STATUS_COLORS: Record<ApplicationStatus, BadgeColor> = {
 }
 
 /** Countdown chip for a deadline: closed / rose <30d / amber <90d / gray otherwise. */
-function countdownChip(deadline: string): { label: string; color: BadgeColor } {
+function countdownChip(
+  deadline: string,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+): { label: string; color: BadgeColor } {
   const days = daysUntil(deadline)
-  if (days < 0) return { label: 'Closed', color: 'gray' }
-  if (days < 30) return { label: `${days}d left`, color: 'rose' }
-  if (days < 90) return { label: `${days}d left`, color: 'amber' }
-  return { label: `${days}d left`, color: 'gray' }
+  if (days < 0) return { label: t('sch.closed'), color: 'gray' }
+  if (days < 30) return { label: t('sch.daysLeft', { d: days }), color: 'rose' }
+  if (days < 90) return { label: t('sch.daysLeft', { d: days }), color: 'amber' }
+  return { label: t('sch.daysLeft', { d: days }), color: 'gray' }
 }
 
 export function ScholarshipDetailPage() {
+  const { t, lang } = useT()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const entries = useTracker((s) => s.entries)
@@ -69,13 +81,13 @@ export function ScholarshipDetailPage() {
     return (
       <EmptyState
         icon={SearchX}
-        title="Scholarship not found"
-        description="This scholarship does not exist or may have been removed from the directory."
+        title={t('sch.notFound.title')}
+        description={t('sch.notFound.desc')}
         action={
           <Link to="/scholarships">
             <Button variant="secondary" size="sm">
               <ArrowLeft className="h-3.5 w-3.5" />
-              Back to scholarships
+              {t('sch.notFound.back')}
             </Button>
           </Link>
         }
@@ -85,7 +97,7 @@ export function ScholarshipDetailPage() {
 
   const entry = entries[scholarship.id]
   const status: ApplicationStatus = entry?.status ?? 'Not Started'
-  const chip = countdownChip(scholarship.deadline)
+  const chip = countdownChip(scholarship.deadline, t)
   const totalDocs = scholarship.documents.length
   const doneDocs = scholarship.documents.filter((d) => entry?.checklist[d]).length
   const pct = totalDocs === 0 ? 0 : Math.round((doneDocs / totalDocs) * 100)
@@ -97,7 +109,7 @@ export function ScholarshipDetailPage() {
         <Link to="/scholarships">
           <Button variant="ghost" size="sm" className="-ml-3">
             <ArrowLeft className="h-4 w-4" />
-            All scholarships
+            {t('sch.detail.allScholarships')}
           </Button>
         </Link>
       </div>
@@ -105,10 +117,12 @@ export function ScholarshipDetailPage() {
       {/* Header */}
       <header>
         <div className="flex flex-wrap items-center gap-2">
-          <Badge color={CATEGORY_COLORS[scholarship.category]}>{scholarship.category}</Badge>
-          {scholarship.tags.map((t) => (
-            <Badge key={t} color="gray">
-              {t}
+          <Badge color={CATEGORY_COLORS[scholarship.category]}>
+            {enumLabel(CATEGORY_HI, scholarship.category, lang)}
+          </Badge>
+          {scholarship.tags.map((tag) => (
+            <Badge key={tag} color="gray">
+              {tag}
             </Badge>
           ))}
         </div>
@@ -122,7 +136,7 @@ export function ScholarshipDetailPage() {
           </span>
           <span className="inline-flex items-center gap-1.5">
             <MapPin className="h-4 w-4" />
-            {scholarship.region}
+            {enumLabel(REGION_HI, scholarship.region, lang)}
           </span>
         </p>
       </header>
@@ -132,17 +146,19 @@ export function ScholarshipDetailPage() {
         <Card className="px-4 py-3.5">
           <p className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-zinc-400 uppercase dark:text-zinc-500">
             <Banknote className="h-3.5 w-3.5" />
-            Award
+            {t('sch.detail.award')}
           </p>
           <p className="mt-1.5 text-lg font-bold text-brand-600 dark:text-brand-300">
             {formatMoney(scholarship.amount, scholarship.currency)}
-            <span className="ml-1 text-xs font-medium text-zinc-400 dark:text-zinc-500">/yr</span>
+            <span className="ml-1 text-xs font-medium text-zinc-400 dark:text-zinc-500">
+              {t('sch.perYear')}
+            </span>
           </p>
         </Card>
         <Card className="px-4 py-3.5">
           <p className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-zinc-400 uppercase dark:text-zinc-500">
             <CalendarDays className="h-3.5 w-3.5" />
-            Deadline
+            {t('sch.detail.deadline')}
           </p>
           <p className="mt-1.5 text-sm font-bold text-zinc-900 dark:text-zinc-50">
             {formatDate(scholarship.deadline)}
@@ -154,19 +170,21 @@ export function ScholarshipDetailPage() {
         <Card className="px-4 py-3.5">
           <p className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-zinc-400 uppercase dark:text-zinc-500">
             <MapPin className="h-3.5 w-3.5" />
-            Region
+            {t('sch.detail.region')}
           </p>
           <p className="mt-1.5 text-sm font-bold text-zinc-900 dark:text-zinc-50">
-            {scholarship.region}
+            {enumLabel(REGION_HI, scholarship.region, lang)}
           </p>
         </Card>
         <Card className="px-4 py-3.5">
           <p className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-zinc-400 uppercase dark:text-zinc-500">
             <BookmarkCheck className="h-3.5 w-3.5" />
-            Status
+            {t('sch.detail.status')}
           </p>
           <div className="mt-1.5">
-            <Badge color={STATUS_COLORS[status]}>{status}</Badge>
+            <Badge color={STATUS_COLORS[status]}>
+              {enumLabel(STATUS_HI, status, lang)}
+            </Badge>
           </div>
         </Card>
       </div>
@@ -178,7 +196,7 @@ export function ScholarshipDetailPage() {
           <Card>
             <CardHeader>
               <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
-                About this scholarship
+                {t('sch.detail.about')}
               </h2>
             </CardHeader>
             <CardBody>
@@ -191,7 +209,7 @@ export function ScholarshipDetailPage() {
           <Card>
             <CardHeader>
               <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
-                Eligibility criteria
+                {t('sch.detail.eligibility')}
               </h2>
             </CardHeader>
             <CardBody>
@@ -215,11 +233,11 @@ export function ScholarshipDetailPage() {
           <Card>
             <CardHeader>
               <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
-                Application checklist
+                {t('sch.detail.checklist')}
               </h2>
             </CardHeader>
             <CardBody className="space-y-4">
-              <Field label="Status">
+              <Field label={t('sch.detail.status')}>
                 <Select
                   value={status}
                   onChange={(e) =>
@@ -228,7 +246,7 @@ export function ScholarshipDetailPage() {
                 >
                   {APPLICATION_STATUSES.map((st) => (
                     <option key={st} value={st}>
-                      {st}
+                      {enumLabel(STATUS_HI, st, lang)}
                     </option>
                   ))}
                 </Select>
@@ -236,7 +254,7 @@ export function ScholarshipDetailPage() {
 
               <div className="space-y-2">
                 <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-                  Required documents
+                  {t('sch.detail.requiredDocs')}
                 </p>
                 {scholarship.documents.map((doc) => {
                   const checked = Boolean(entry?.checklist[doc])
@@ -258,7 +276,7 @@ export function ScholarshipDetailPage() {
                           checked && 'text-zinc-400 line-through dark:text-zinc-500',
                         )}
                       >
-                        {doc}
+                        {enumLabel(DOCUMENT_HI, doc, lang)}
                       </span>
                     </button>
                   )
@@ -268,7 +286,7 @@ export function ScholarshipDetailPage() {
               <div>
                 <div className="mb-1.5 flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
                   <span>
-                    {doneDocs} of {totalDocs} documents ready
+                    {t('sch.detail.docsReady', { x: doneDocs, y: totalDocs })}
                   </span>
                   <span className="font-semibold">{pct}%</span>
                 </div>
@@ -284,16 +302,18 @@ export function ScholarshipDetailPage() {
 
           <Card>
             <CardHeader>
-              <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">My notes</h2>
+              <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
+                {t('sch.detail.myNotes')}
+              </h2>
             </CardHeader>
             <CardBody className="space-y-2">
               <Textarea
                 value={entry?.notes ?? ''}
                 onChange={(e) => setNotes(scholarship.id, e.target.value)}
-                placeholder="Portal logins, essay ideas, things to follow up…"
+                placeholder={t('sch.detail.notesPlaceholder')}
               />
               <p className="text-xs text-zinc-400 dark:text-zinc-500">
-                Saved automatically in your browser.
+                {t('sch.detail.notesHint')}
               </p>
             </CardBody>
           </Card>
@@ -309,10 +329,10 @@ export function ScholarshipDetailPage() {
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Remove from tracker
+                {t('sch.detail.remove')}
               </Button>
               <p className="text-center text-xs text-zinc-400 dark:text-zinc-500">
-                Last updated {formatDate(entry.updatedAt)}
+                {t('sch.detail.lastUpdated', { date: formatDate(entry.updatedAt) })}
               </p>
             </div>
           )}

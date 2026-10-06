@@ -11,25 +11,33 @@ import {
   X,
 } from 'lucide-react'
 import { applyThemeClass, useTheme, useWorksheet } from '../../store'
+import { useLanguage, useT } from '../../i18n'
 import { cn } from '../../lib/utils'
 import { ThemeToggle } from './ThemeToggle'
+import { LanguageToggle } from './LanguageToggle'
 
 const navItems = [
-  { to: '/papers', label: 'Past Papers', icon: FileText },
-  { to: '/notes', label: 'Notes', icon: NotebookPen },
-  { to: '/resume', label: 'Resume Builder', icon: Library },
-  { to: '/scholarships', label: 'Scholarships', icon: Award },
-  { to: '/tracker', label: 'Tracker', icon: LayoutDashboard },
+  { to: '/papers', labelKey: 'nav.papers', icon: FileText },
+  { to: '/notes', labelKey: 'nav.notes', icon: NotebookPen },
+  { to: '/resume', labelKey: 'nav.resume', icon: Library },
+  { to: '/scholarships', labelKey: 'nav.scholarships', icon: Award },
+  { to: '/tracker', labelKey: 'nav.tracker', icon: LayoutDashboard },
 ]
 
 export function Layout() {
   const { dark } = useTheme()
+  const lang = useLanguage((s) => s.lang)
+  const { t } = useT()
   const worksheetCount = useWorksheet((s) => s.ids.length)
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     applyThemeClass(dark)
   }, [dark])
+
+  useEffect(() => {
+    document.documentElement.lang = lang
+  }, [lang])
 
   return (
     <div className="theme-fade flex min-h-screen flex-col bg-stone-50 dark:bg-zinc-950">
@@ -45,7 +53,7 @@ export function Layout() {
           </Link>
 
           <nav className="ml-6 hidden items-center gap-1 lg:flex">
-            {navItems.map(({ to, label }) => (
+            {navItems.map(({ to, labelKey }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -58,7 +66,7 @@ export function Layout() {
                   )
                 }
               >
-                {label}
+                {t(labelKey)}
               </NavLink>
             ))}
           </nav>
@@ -69,18 +77,19 @@ export function Layout() {
               className="theme-fade relative flex h-9 items-center gap-2 rounded-xl bg-brand-600 px-3.5 text-sm font-semibold text-white shadow-md shadow-brand-600/25 hover:bg-brand-700 dark:bg-brand-500 dark:text-brand-950 dark:hover:bg-brand-400"
             >
               <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">Worksheet</span>
+              <span className="hidden sm:inline">{t('nav.worksheet')}</span>
               {worksheetCount > 0 && (
                 <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold dark:bg-black/20">
                   {worksheetCount}
                 </span>
               )}
             </Link>
+            <LanguageToggle />
             <ThemeToggle />
             <button
               className="theme-fade flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 lg:hidden dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
               onClick={() => setMenuOpen((o) => !o)}
-              aria-label="Toggle menu"
+              aria-label={t('nav.menu')}
             >
               {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -90,7 +99,7 @@ export function Layout() {
         {menuOpen && (
           <nav className="theme-fade border-t border-zinc-200 bg-white px-4 py-3 lg:hidden dark:border-zinc-800 dark:bg-zinc-950">
             <div className="flex flex-col gap-1">
-              {navItems.map(({ to, label, icon: Icon }) => (
+              {navItems.map(({ to, labelKey, icon: Icon }) => (
                 <NavLink
                   key={to}
                   to={to}
@@ -105,7 +114,7 @@ export function Layout() {
                   }
                 >
                   <Icon className="h-4 w-4" />
-                  {label}
+                  {t(labelKey)}
                 </NavLink>
               ))}
             </div>
@@ -122,13 +131,13 @@ export function Layout() {
           <div className="flex items-center gap-2">
             <GraduationCap className="h-4 w-4 text-brand-500" />
             <span className="font-semibold text-zinc-700 dark:text-zinc-200">EduVault</span>
-            <span>— free forever, by students for students.</span>
+            <span>{t('footer.tagline')}</span>
           </div>
           <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-            <Link to="/papers" className="hover:text-brand-600 dark:hover:text-brand-300">Past Papers</Link>
-            <Link to="/notes" className="hover:text-brand-600 dark:hover:text-brand-300">Notes</Link>
-            <Link to="/resume" className="hover:text-brand-600 dark:hover:text-brand-300">Resume Builder</Link>
-            <Link to="/scholarships" className="hover:text-brand-600 dark:hover:text-brand-300">Scholarships</Link>
+            <Link to="/papers" className="hover:text-brand-600 dark:hover:text-brand-300">{t('nav.papers')}</Link>
+            <Link to="/notes" className="hover:text-brand-600 dark:hover:text-brand-300">{t('nav.notes')}</Link>
+            <Link to="/resume" className="hover:text-brand-600 dark:hover:text-brand-300">{t('nav.resume')}</Link>
+            <Link to="/scholarships" className="hover:text-brand-600 dark:hover:text-brand-300">{t('nav.scholarships')}</Link>
           </nav>
         </div>
       </footer>

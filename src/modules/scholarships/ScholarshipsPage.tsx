@@ -12,6 +12,8 @@ import { scholarships } from '../../data'
 import { SCHOLARSHIP_CATEGORIES } from '../../types'
 import type { ScholarshipCategory } from '../../types'
 import { useTracker } from '../../store'
+import { useT } from '../../i18n'
+import { CATEGORY_HI, REGION_HI, STATUS_HI, enumLabel } from '../../i18n/enums'
 import {
   Badge,
   Button,
@@ -38,15 +40,19 @@ type DeadlineFilter = 'any' | '30' | '60' | '90'
 type MinAwardFilter = 'any' | '2500' | '5000' | '7500'
 
 /** Countdown chip for a deadline: closed / rose <30d / amber <90d / gray otherwise. */
-function countdownChip(deadline: string): { label: string; color: BadgeColor } {
+function countdownChip(
+  deadline: string,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+): { label: string; color: BadgeColor } {
   const days = daysUntil(deadline)
-  if (days < 0) return { label: 'Closed', color: 'gray' }
-  if (days < 30) return { label: `${days}d left`, color: 'rose' }
-  if (days < 90) return { label: `${days}d left`, color: 'amber' }
-  return { label: `${days}d left`, color: 'gray' }
+  if (days < 0) return { label: t('sch.closed'), color: 'gray' }
+  if (days < 30) return { label: t('sch.daysLeft', { d: days }), color: 'rose' }
+  if (days < 90) return { label: t('sch.daysLeft', { d: days }), color: 'amber' }
+  return { label: t('sch.daysLeft', { d: days }), color: 'gray' }
 }
 
 export function ScholarshipsPage() {
+  const { t, lang } = useT()
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState<CategoryFilter>('All')
   const [region, setRegion] = useState('All')
@@ -101,61 +107,61 @@ export function ScholarshipsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Scholarship Directory"
-        subtitle="Browse government grants, private scholarships, university aid and reserved-quota schemes — then track your applications in one calm workspace."
+        title={t('sch.page.title')}
+        subtitle={t('sch.page.subtitle')}
       />
 
       {/* Filters */}
       <Card>
         <CardBody className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <Field label="Search">
+            <Field label={t('sch.filter.search')}>
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Name, provider, keyword…"
+                placeholder={t('sch.filter.searchPlaceholder')}
               />
             </Field>
-            <Field label="Category">
+            <Field label={t('sch.filter.category')}>
               <Select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as CategoryFilter)}
               >
-                <option value="All">All categories</option>
+                <option value="All">{t('sch.filter.allCategories')}</option>
                 {SCHOLARSHIP_CATEGORIES.map((c) => (
                   <option key={c} value={c}>
-                    {c}
+                    {enumLabel(CATEGORY_HI, c, lang)}
                   </option>
                 ))}
               </Select>
             </Field>
-            <Field label="Region">
+            <Field label={t('sch.filter.region')}>
               <Select value={region} onChange={(e) => setRegion(e.target.value)}>
-                <option value="All">All regions</option>
+                <option value="All">{t('sch.filter.allRegions')}</option>
                 {regions.map((r) => (
                   <option key={r} value={r}>
-                    {r}
+                    {enumLabel(REGION_HI, r, lang)}
                   </option>
                 ))}
               </Select>
             </Field>
-            <Field label="Deadline">
+            <Field label={t('sch.filter.deadline')}>
               <Select
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value as DeadlineFilter)}
               >
-                <option value="any">Any deadline</option>
-                <option value="30">Closing in 30 days</option>
-                <option value="60">Closing in 60 days</option>
-                <option value="90">Closing in 90 days</option>
+                <option value="any">{t('sch.filter.deadlineAny')}</option>
+                <option value="30">{t('sch.filter.deadline30')}</option>
+                <option value="60">{t('sch.filter.deadline60')}</option>
+                <option value="90">{t('sch.filter.deadline90')}</option>
               </Select>
             </Field>
-            <Field label="Min award">
+            <Field label={t('sch.filter.minAward')}>
               <Select
                 value={minAward}
                 onChange={(e) => setMinAward(e.target.value as MinAwardFilter)}
               >
-                <option value="any">Any amount</option>
+                <option value="any">{t('sch.filter.anyAmount')}</option>
                 <option value="2500">≥ $2,500</option>
                 <option value="5000">≥ $5,000</option>
                 <option value="7500">≥ $7,500</option>
@@ -164,15 +170,15 @@ export function ScholarshipsPage() {
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-              Showing{' '}
+              {t('sch.results.showingA', { total: scholarships.length })}{' '}
               <span className="font-bold text-zinc-800 dark:text-zinc-100">
                 {filtered.length}
               </span>{' '}
-              of {scholarships.length} scholarships
+              {t('sch.results.showingB', { total: scholarships.length })}
             </p>
             {filtersActive && (
               <Button variant="ghost" size="sm" onClick={clearFilters}>
-                Clear filters
+                {t('common.clearFilters')}
               </Button>
             )}
           </div>
@@ -183,18 +189,18 @@ export function ScholarshipsPage() {
       {filtered.length === 0 ? (
         <EmptyState
           icon={SearchX}
-          title="No scholarships match your filters"
-          description="Try broadening your search terms, or clear the filters to see every opportunity again."
+          title={t('sch.empty.title')}
+          description={t('sch.empty.desc')}
           action={
             <Button variant="secondary" size="sm" onClick={clearFilters}>
-              Clear filters
+              {t('common.clearFilters')}
             </Button>
           }
         />
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((s) => {
-            const chip = countdownChip(s.deadline)
+            const chip = countdownChip(s.deadline, t)
             const entry = entries[s.id]
             return (
               <Card key={s.id} className="flex h-full flex-col">
@@ -209,21 +215,21 @@ export function ScholarshipsPage() {
                       </p>
                     </div>
                     <Badge color={CATEGORY_COLORS[s.category]} className="shrink-0">
-                      {s.category}
+                      {enumLabel(CATEGORY_HI, s.category, lang)}
                     </Badge>
                   </div>
 
                   <p className="text-lg font-bold text-brand-600 dark:text-brand-300">
                     {formatMoney(s.amount, s.currency)}
                     <span className="ml-1 text-xs font-medium text-zinc-400 dark:text-zinc-500">
-                      /yr
+                      {t('sch.perYear')}
                     </span>
                   </p>
 
                   <div className="space-y-1.5 text-xs text-zinc-500 dark:text-zinc-400">
                     <p className="flex items-center gap-1.5">
                       <MapPin className="h-3.5 w-3.5 shrink-0" />
-                      {s.region}
+                      {enumLabel(REGION_HI, s.region, lang)}
                     </p>
                     <p className="flex flex-wrap items-center gap-1.5">
                       <CalendarDays className="h-3.5 w-3.5 shrink-0" />
@@ -237,9 +243,9 @@ export function ScholarshipsPage() {
                   </p>
 
                   <div className="flex flex-wrap gap-1.5">
-                    {s.tags.slice(0, 3).map((t) => (
-                      <Badge key={t} color="gray">
-                        {t}
+                    {s.tags.slice(0, 3).map((tag) => (
+                      <Badge key={tag} color="gray">
+                        {tag}
                       </Badge>
                     ))}
                   </div>
@@ -247,7 +253,7 @@ export function ScholarshipsPage() {
                   <div className="mt-auto flex items-center justify-between gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
                     <Link to={`/scholarships/${s.id}`}>
                       <Button variant="ghost" size="sm">
-                        Details
+                        {t('sch.details')}
                         <ArrowRight className="h-3.5 w-3.5" />
                       </Button>
                     </Link>
@@ -257,7 +263,7 @@ export function ScholarshipsPage() {
                         className="theme-fade inline-flex h-8 items-center justify-center gap-1.5 rounded-xl border border-mint-200 bg-mint-100 px-3 text-xs font-semibold whitespace-nowrap text-mint-800 shadow-sm hover:bg-mint-200 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-200 dark:hover:bg-emerald-500/25"
                       >
                         <BookmarkCheck className="h-3.5 w-3.5" />
-                        {entry.status}
+                        {enumLabel(STATUS_HI, entry.status, lang)}
                       </Link>
                     ) : (
                       <Button
@@ -266,7 +272,7 @@ export function ScholarshipsPage() {
                         onClick={() => setStatus(s.id, 'In Progress')}
                       >
                         <BookmarkPlus className="h-3.5 w-3.5" />
-                        Track
+                        {t('sch.track')}
                       </Button>
                     )}
                   </div>

@@ -15,6 +15,8 @@ import {
 import { getSubject, questions } from '../../data'
 import type { Question } from '../../types'
 import { useWorksheet } from '../../store'
+import { useT } from '../../i18n'
+import { enumLabel, EXAM_TYPE_HI } from '../../i18n/enums'
 import { Badge, Button, Card, EmptyState, PageHeader } from '../../components/ui'
 
 /* jsPDF is heavy — the generator module is loaded on demand at export time. */
@@ -27,15 +29,19 @@ const exportAnswerKey = async (qs: Question[]) => {
   generateAnswerKey(qs)
 }
 
-/** 40 -> "40 min", 80 -> "1h 20m", 120 -> "2h". */
-function formatMinutes(minutes: number): string {
-  if (minutes < 60) return `${minutes} min`
+/** 40 -> "40 min" / "40 मिनट", 80 -> "1h 20m" / "1 घं 20 मि", 120 -> "2h" / "2 घं". */
+function formatMinutes(
+  minutes: number,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+): string {
+  if (minutes < 60) return t('papers.time.minutes', { n: minutes })
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
-  return m === 0 ? `${h}h` : `${h}h ${m}m`
+  return m === 0 ? t('papers.time.hours', { n: h }) : t('papers.time.hoursMinutes', { h, m })
 }
 
 export function WorksheetPage() {
+  const { t, lang } = useT()
   const ids = useWorksheet((s) => s.ids)
   const remove = useWorksheet((s) => s.remove)
   const clear = useWorksheet((s) => s.clear)
@@ -74,19 +80,16 @@ export function WorksheetPage() {
   if (ordered.length === 0) {
     return (
       <div>
-        <PageHeader
-          title="Custom Paper Workspace"
-          subtitle="Compile questions from the repository into a printable practice paper with a matching answer key."
-        />
+        <PageHeader title={t('papers.workspace.title')} subtitle={t('papers.workspace.emptySubtitle')} />
         <EmptyState
           icon={FileText}
-          title="Your worksheet is empty"
-          description="Browse the past-paper repository and add questions to build a printable practice paper with a matching answer key."
+          title={t('papers.workspace.emptyTitle')}
+          description={t('papers.workspace.emptyDesc')}
           action={
             <Link to="/papers">
               <Button>
                 <FileText className="h-4 w-4" />
-                Browse questions
+                {t('papers.browseQuestions')}
               </Button>
             </Link>
           }
@@ -96,18 +99,15 @@ export function WorksheetPage() {
   }
 
   const stats = [
-    { icon: ListChecks, label: 'Questions', value: String(ordered.length) },
-    { icon: Star, label: 'Total marks', value: String(totalMarks) },
-    { icon: Clock, label: 'Suggested time', value: formatMinutes(totalMarks * 2) },
-    { icon: BookOpen, label: 'Subjects covered', value: String(subjectCount) },
+    { icon: ListChecks, label: t('papers.stats.questions'), value: String(ordered.length) },
+    { icon: Star, label: t('papers.stats.totalMarks'), value: String(totalMarks) },
+    { icon: Clock, label: t('papers.stats.suggestedTime'), value: formatMinutes(totalMarks * 2, t) },
+    { icon: BookOpen, label: t('papers.stats.subjectsCovered'), value: String(subjectCount) },
   ]
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Custom Paper Workspace"
-        subtitle="Reorder your picks, then export a printable practice paper and its answer key as PDFs."
-      />
+      <PageHeader title={t('papers.workspace.title')} subtitle={t('papers.workspace.subtitle')} />
 
       {/* Summary strip */}
       <Card className="grid grid-cols-2 sm:grid-cols-4">
@@ -135,7 +135,7 @@ export function WorksheetPage() {
           return (
             <Card key={q.id} className="flex items-center gap-4 px-4 py-3">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-xs font-bold text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
-                Q{i + 1}
+                {t('papers.questionNumber', { n: i + 1 })}
               </span>
               <div className="min-w-0 flex-1">
                 <p className="line-clamp-2 text-sm font-medium text-zinc-800 dark:text-zinc-100">
@@ -143,9 +143,9 @@ export function WorksheetPage() {
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   <Badge color={subject?.color ?? 'gray'}>{subject?.code ?? 'N/A'}</Badge>
-                  <Badge color="amber">{q.marks} marks</Badge>
+                  <Badge color="amber">{t('papers.marks', { n: q.marks })}</Badge>
                   <Badge color="gray">
-                    {q.examType} {q.year}
+                    {enumLabel(EXAM_TYPE_HI, q.examType, lang)} {q.year}
                   </Badge>
                 </div>
               </div>
@@ -154,7 +154,7 @@ export function WorksheetPage() {
                   variant="ghost"
                   size="sm"
                   className="px-2"
-                  aria-label="Move question up"
+                  aria-label={t('papers.moveUp')}
                   disabled={i === 0}
                   onClick={() => move(i, -1)}
                 >
@@ -164,7 +164,7 @@ export function WorksheetPage() {
                   variant="ghost"
                   size="sm"
                   className="px-2"
-                  aria-label="Move question down"
+                  aria-label={t('papers.moveDown')}
                   disabled={i === ordered.length - 1}
                   onClick={() => move(i, 1)}
                 >
@@ -174,7 +174,7 @@ export function WorksheetPage() {
                   variant="ghost"
                   size="sm"
                   className="px-2 text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-500/10 dark:hover:text-rose-300"
-                  aria-label="Remove question"
+                  aria-label={t('papers.removeQuestion')}
                   onClick={() => remove(q.id)}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -190,16 +190,16 @@ export function WorksheetPage() {
         <Card className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 shadow-lg shadow-zinc-900/5 dark:shadow-black/40">
           <Button variant="danger" onClick={clearAll}>
             <Trash2 className="h-4 w-4" />
-            Clear all
+            {t('papers.clearAll')}
           </Button>
           <div className="flex flex-wrap gap-2">
             <Button variant="primary" onClick={() => void exportQuestionPaper(ordered)}>
               <FileDown className="h-4 w-4" />
-              Download Question Paper PDF
+              {t('papers.downloadPaperPdf')}
             </Button>
             <Button variant="secondary" onClick={() => void exportAnswerKey(ordered)}>
               <FileCheck2 className="h-4 w-4" />
-              Download Answer Key PDF
+              {t('papers.downloadKeyPdf')}
             </Button>
           </div>
         </Card>
