@@ -1,16 +1,15 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Lock, Send } from 'lucide-react'
+import { Send } from 'lucide-react'
 import { NOTE_TYPES } from '../../types'
 import type { NoteType } from '../../types'
 import { subjects } from '../../data'
-import { canUpload, useNotes, useRole } from '../../store'
+import { useNotes } from '../../store'
 import {
   Button,
   Card,
   CardBody,
-  EmptyState,
   Field,
   Input,
   PageHeader,
@@ -24,7 +23,6 @@ const TYPE_LABELS: Record<NoteType, string> = {
 }
 
 export function UploadNotePage() {
-  const role = useRole((s) => s.role)
   const addNote = useNotes((s) => s.addNote)
   const navigate = useNavigate()
 
@@ -73,27 +71,11 @@ export function UploadNotePage() {
     navigate('/notes')
   }
 
-  if (!canUpload(role)) {
-    return (
-      <div>
-        <PageHeader
-          title="Upload notes"
-          subtitle="Share your notes and answer scripts with the community."
-        />
-        <EmptyState
-          icon={Lock}
-          title="Contributor access required"
-          description="Uploads are open to Contributors and Student Ambassador moderators. Switch your role using the switcher in the top-right of the navbar to publish notes and answer scripts."
-        />
-      </div>
-    )
-  }
-
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader
         title="Upload notes"
-        subtitle="Share your notes and answer scripts with the community. A Student Ambassador moderator will verify your upload before it is marked as trusted."
+        subtitle="Share your notes and answer scripts with the community — no account or sign-up needed. Community moderation verifies new uploads before they're marked as trusted."
       />
 
       <Card>

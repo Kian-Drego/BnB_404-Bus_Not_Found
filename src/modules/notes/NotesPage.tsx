@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BadgeCheck, Flag, Info, NotebookPen, PenLine, ShieldCheck, X } from 'lucide-react'
+import { BadgeCheck, Flag, NotebookPen, PenLine, ShieldCheck, X } from 'lucide-react'
 import type { Note, NoteType } from '../../types'
 import { subjects, taxonomyOf } from '../../data'
-import { canModerate, canUpload, mergeNotes, noteScore, useNotes, useRole, useVotes } from '../../store'
+import { mergeNotes, noteScore, useNotes, useVotes } from '../../store'
 import { formatDate } from '../../lib/utils'
 import { Badge, Button, Card, CardBody, EmptyState, Input, PageHeader, Select } from '../../components/ui'
 import { VoteButtons } from './VoteButtons'
@@ -57,7 +57,6 @@ function NoteCard({ note }: { note: Note }) {
 }
 
 export function NotesPage() {
-  const role = useRole((s) => s.role)
   const notesState = useNotes()
   const mine = useVotes((s) => s.mine)
 
@@ -117,17 +116,15 @@ export function NotesPage() {
     <div>
       <PageHeader
         title="Notes & Content Repository"
-        subtitle="Peer-reviewed notes and answer scripts, shared by students and verified by our Student Ambassador moderators."
+        subtitle="Peer-reviewed notes and answer scripts, shared openly by students — no account needed. Community moderation keeps quality high."
         actions={
           <>
-            {canModerate(role) && (
-              <Link to="/notes/moderation">
-                <Button variant="secondary">
-                  <ShieldCheck className="h-4 w-4" />
-                  Moderation
-                </Button>
-              </Link>
-            )}
+            <Link to="/notes/moderation">
+              <Button variant="secondary">
+                <ShieldCheck className="h-4 w-4" />
+                Moderation
+              </Button>
+            </Link>
             <Link to="/notes/upload">
               <Button>
                 <PenLine className="h-4 w-4" />
@@ -137,18 +134,6 @@ export function NotesPage() {
           </>
         }
       />
-
-      {!canUpload(role) && (
-        <Card className="mb-6 border-softblue-200! bg-softblue-100! dark:border-sky-500/30! dark:bg-sky-500/10!">
-          <CardBody className="flex items-start gap-3">
-            <Info className="mt-0.5 h-5 w-5 shrink-0 text-softblue-700 dark:text-sky-300" />
-            <p className="text-sm leading-relaxed text-softblue-800 dark:text-sky-200">
-              You're browsing as a Student. Switch to the Contributor role (top-right) to upload
-              notes and answer scripts.
-            </p>
-          </CardBody>
-        </Card>
-      )}
 
       <Card className="mb-6">
         <CardBody className="space-y-3">

@@ -2,8 +2,6 @@
 /*  EduVault — shared domain models                                    */
 /* ------------------------------------------------------------------ */
 
-export type Role = 'student' | 'contributor' | 'moderator'
-
 export type PastelColor = 'lavender' | 'mint' | 'blue' | 'peach'
 
 /* ---------------- Module A/B: taxonomy & content ------------------ */

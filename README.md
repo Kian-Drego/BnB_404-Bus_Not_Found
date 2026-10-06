@@ -7,7 +7,7 @@ A responsive, **100% free** student-led platform for undergraduates, combining f
 | Module | What it does |
 | --- | --- |
 | **A · Past Papers & Question Repository** | Search/filter past exam questions by subject → chapter → topic, year, term and difficulty. Add questions to a **Custom Paper Workspace**, reorder them, and export two client-side PDFs: a branded **Question Paper** (cover page, summary box, instructions) and a matching **Answer Key** (step-by-step solutions). |
-| **B · Notes & Content Repository** | Peer-uploaded notes & answer scripts with **up/down voting**, mandatory `Chapter` + `Topic` validation on upload, and a **role model** (Student / Contributor / Student Ambassador-Moderator) with a verification queue, flagging and takedowns. |
+| **B · Notes & Content Repository** | Peer-uploaded notes & answer scripts with **up/down voting**, mandatory `Chapter` + `Topic` validation on upload, and **open community moderation** — anyone can contribute (no login) and help verify, flag or remove content. |
 | **C · ATS Resume Builder** | Single-column, parser-safe resume editor with live **ATS structural checks**, **keyword-density report** per target role, action-verb guidance, and a clean **ATS-safe PDF export** (Helvetica, no tables/graphics/columns). |
 | **D · Scholarship Directory & Tracker** | Government, private, university-aid and **reserved-quota** scholarships with filters (category, region, deadline, award amount), per-scholarship eligibility rules, interactive **document checklists** (Marksheet, Income/Caste Certificate, SOP…), and a personal **application tracker** (Not Started → In Progress → Submitted → Awarded/Rejected). |
 
@@ -50,6 +50,6 @@ src/
 
 ## Notes
 
-- **Roles** are simulated via the navbar switcher to demonstrate access control: Students browse/vote, Contributors can upload, Ambassadors moderate.
+- **No login, open contribution:** anyone can upload notes/answer scripts and participate in community moderation (verify / flag / remove) straight from the navbar.
 - All data is seed content living in `src/data/index.ts`; user-generated state lives in `localStorage` under `eduvault-*` keys. Clearing site data resets the app.
 - The PDF generators sanitise text to cp1252 so math symbols (π, λ, →, …) render correctly with jsPDF's built-in fonts.

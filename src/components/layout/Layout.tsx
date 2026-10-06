@@ -13,7 +13,6 @@ import {
 import { applyThemeClass, useTheme, useWorksheet } from '../../store'
 import { cn } from '../../lib/utils'
 import { ThemeToggle } from './ThemeToggle'
-import { RoleSwitcher } from './RoleSwitcher'
 
 const navItems = [
   { to: '/papers', label: 'Past Papers', icon: FileText },
@@ -77,9 +76,6 @@ export function Layout() {
                 </span>
               )}
             </Link>
-            <div className="hidden sm:block">
-              <RoleSwitcher />
-            </div>
             <ThemeToggle />
             <button
               className="theme-fade flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 lg:hidden dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
@@ -112,9 +108,6 @@ export function Layout() {
                   {label}
                 </NavLink>
               ))}
-              <div className="mt-2 border-t border-zinc-100 pt-3 sm:hidden dark:border-zinc-800">
-                <RoleSwitcher />
-              </div>
             </div>
           </nav>
         )}

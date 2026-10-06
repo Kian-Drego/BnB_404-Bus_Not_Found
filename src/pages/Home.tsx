@@ -66,7 +66,7 @@ export function Home() {
         <div className="relative max-w-2xl">
           <Badge color="lavender" className="mb-4">
             <Sparkles className="h-3 w-3" />
-            100% free — no paid tiers, ever
+            100% free — no login, no paid tiers, ever
           </Badge>
           <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 sm:text-5xl sm:leading-[1.1] dark:text-zinc-50">
             Your degree,{' '}
@@ -161,8 +161,9 @@ export function Home() {
             Quality you can trust
           </h3>
           <p className="mt-0.5 text-sm text-zinc-600 dark:text-zinc-300">
-            Every upload passes community voting and Student Ambassador verification before it is
-            marked as trusted. Flagged content is reviewed and removed when it misses the bar.
+            Anyone can contribute — no account needed. Every upload passes community voting and
+            open peer review before it is marked as trusted, and flagged content is re-reviewed by
+            the community.
           </p>
         </div>
       </section>

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { notes as seedNotes } from '../data'
-import type { ApplicationStatus, Note, Role, TrackerEntry } from '../types'
+import type { ApplicationStatus, Note, TrackerEntry } from '../types'
 import { uid } from '../lib/utils'
 
 /* ------------------------------------------------------------------ */
@@ -26,34 +26,6 @@ export const useTheme = create<ThemeState>()(
 /** Side-effect hook helper: call once in the root layout. */
 export function applyThemeClass(dark: boolean): void {
   document.documentElement.classList.toggle('dark', dark)
-}
-
-/* ------------------------------------------------------------------ */
-/*  Current user role (student | contributor | moderator)              */
-/* ------------------------------------------------------------------ */
-
-interface RoleState {
-  role: Role
-  setRole: (role: Role) => void
-}
-
-export const useRole = create<RoleState>()(
-  persist(
-    (set) => ({
-      role: 'student',
-      setRole: (role) => set({ role }),
-    }),
-    { name: 'eduvault-role' },
-  ),
-)
-
-/** Role capabilities — single source of truth for access control. */
-export const ROLE_RANK: Record<Role, number> = { student: 0, contributor: 1, moderator: 2 }
-export function canUpload(role: Role): boolean {
-  return ROLE_RANK[role] >= ROLE_RANK.contributor
-}
-export function canModerate(role: Role): boolean {
-  return ROLE_RANK[role] >= ROLE_RANK.moderator
 }
 
 /* ------------------------------------------------------------------ */

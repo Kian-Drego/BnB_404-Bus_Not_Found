@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { BadgeCheck, Flag, PartyPopper, ShieldAlert, Trash2 } from 'lucide-react'
+import { BadgeCheck, Flag, PartyPopper, Trash2 } from 'lucide-react'
 import { taxonomyOf } from '../../data'
-import { canModerate, mergeNotes, useNotes, useRole } from '../../store'
+import { mergeNotes, useNotes } from '../../store'
 import { formatDate } from '../../lib/utils'
 import { Badge, Button, Card, CardBody, EmptyState, PageHeader } from '../../components/ui'
 import { VoteButtons } from './VoteButtons'
@@ -10,7 +10,6 @@ const flagTint =
   'border-amber-300! bg-amber-50! text-amber-800! hover:bg-amber-100! hover:border-amber-300! dark:border-amber-500/30! dark:bg-amber-500/10! dark:text-amber-200! dark:hover:bg-amber-500/20!'
 
 export function ModerationPage() {
-  const role = useRole((s) => s.role)
   const notesState = useNotes()
 
   const allNotes = useMemo(() => mergeNotes(notesState), [notesState])
@@ -27,27 +26,11 @@ export function ModerationPage() {
     [allNotes],
   )
 
-  if (!canModerate(role)) {
-    return (
-      <div>
-        <PageHeader
-          title="Moderation queue"
-          subtitle="Verify community uploads and keep the repository trustworthy."
-        />
-        <EmptyState
-          icon={ShieldAlert}
-          title="Student Ambassadors only"
-          description="The moderator role verifies new uploads and manages community flags. Switch to the Moderator role using the switcher in the top-right of the navbar to review the queue."
-        />
-      </div>
-    )
-  }
-
   return (
     <div>
       <PageHeader
         title="Moderation queue"
-        subtitle="Verify community uploads, review flagged material, and keep the repository trustworthy."
+        subtitle="Open community moderation — anyone can verify uploads, review flagged material, and keep the repository trustworthy."
       />
 
       <div className="mb-6 grid grid-cols-3 gap-3 sm:gap-4">
