@@ -1,5 +1,7 @@
 # EduVault — Academic & Career Portal
 
+**Live demo:** [kian-drego.github.io/BnB_404-Bus_Not_Found](https://kian-drego.github.io/BnB_404-Bus_Not_Found/) — deployed automatically from `main` via GitHub Actions.
+
 A responsive, **100% free** student-led platform for undergraduates, combining four modules in one calm, pastel workspace:
 
 | Module | What it does |
